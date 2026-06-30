@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Vanesa Lopez — Tienda</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="assets/css/style.css" />
+  <link rel="stylesheet" href="assets/css/consulta.css" />
+</head>
+<body>
+
+  <!-- ANNOUNCEMENT BAR -->
+  <div class="announcement-bar">
+    <span>✦ ENVÍO GRATIS EN COMPRAS MAYORES A $50.000 ✦ NUEVAS COLECCIONES DISPONIBLES ✦ PAGOS EN CUOTAS SIN INTERÉS ✦</span>
+  </div>
+
+  <!-- HEADER -->
+  <header id="header">
+    <div class="header-inner">
+      <button class="nav-toggle" id="navToggle" aria-label="Menú">
+        <span></span><span></span><span></span>
+      </button>
+      <a href="#" class="logo">
+        <img src="assets/img/logo.png" alt="Vanesa Lopez Tienda" />
+      </a>
+      <nav class="main-nav" id="mainNav">
+        <a href="#nuevos">Nuevos Ingresos</a>
+        <a href="#promociones">Promociones</a>
+        <a href="#ofertas">Ofertas</a>
+        <a href="#liquidacion">Liquidación</a>
+        <a href="#contacto">Contacto</a>
+      </nav>
+      <div class="header-actions">
+        <button class="icon-btn" aria-label="Buscar">
+          <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.35-4.35"/></svg>
+        </button>
+        <button class="icon-btn cart-btn" aria-label="Carrito">
+          <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+          <span class="cart-count">0</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-img">
+      <img src="assets/img/hero.png" alt="Vanesa Lopez" />
+    </div>
+    <div class="hero-content">
+      <p class="hero-eyebrow">Nueva Colección</p>
+      <h1>Elegancia<br /><em>Sin Límites</em></h1>
+      <p class="hero-sub">Moda exclusiva para mujeres que marcan tendencia</p>
+      <div class="hero-btns">
+        <a href="#nuevos" class="btn btn-gold">Ver Colección</a>
+        <a href="#ofertas" class="btn btn-outline">Ver Ofertas</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- STRIP CATEGORÍAS -->
+  <section class="cat-strip">
+    <div class="cat-strip-inner">
+      <a href="#nuevos" class="cat-item">
+        <div class="cat-icon">✦</div>
+        <span>Nuevos Ingresos</span>
+      </a>
+      <a href="#promociones" class="cat-item">
+        <div class="cat-icon">%</div>
+        <span>Promociones</span>
+      </a>
+      <a href="#ofertas" class="cat-item">
+        <div class="cat-icon">♥</div>
+        <span>Ofertas</span>
+      </a>
+      <a href="#liquidacion" class="cat-item">
+        <div class="cat-icon">🔥</div>
+        <span>Liquidación</span>
+      </a>
+    </div>
+  </section>
+
+  <!-- NUEVOS INGRESOS -->
+  <section class="products-section" id="nuevos">
+    <div class="section-header">
+      <p class="section-label">Recién llegado</p>
+      <h2>Últimos Ingresos</h2>
+      <div class="gold-line"></div>
+    </div>
+    <div class="products-grid" id="nuevosGrid">
+      <!-- JS inserta productos -->
+    </div>
+    <div class="section-footer">
+      <a href="#" class="btn btn-outline">Ver Todo</a>
+    </div>
+  </section>
+
+  <!-- BANNER PROMO -->
+  <section class="promo-banner">
+    <div class="promo-banner-inner">
+      <div class="promo-text">
+        <p class="promo-label">Oferta especial</p>
+        <h2>Hasta 40% OFF<br /><em>en selección de temporada</em></h2>
+        <a href="#promociones" class="btn btn-gold">Aprovechar ahora</a>
+      </div>
+      <div class="promo-deco">
+        <img src="assets/img/logo.png" alt="" class="promo-logo-bg" />
+      </div>
+    </div>
+  </section>
+
+  <!-- PROMOCIONES -->
+  <section class="products-section bg-light" id="promociones">
+    <div class="section-header">
+      <p class="section-label">Descuentos exclusivos</p>
+      <h2>Promociones</h2>
+      <div class="gold-line"></div>
+    </div>
+    <div class="products-grid" id="promocionesGrid"></div>
+    <div class="section-footer">
+      <a href="#" class="btn btn-outline">Ver Todo</a>
+    </div>
+  </section>
+
+  <!-- OFERTAS -->
+  <section class="products-section" id="ofertas">
+    <div class="section-header">
+      <p class="section-label">No te las pierdas</p>
+      <h2>Ofertas</h2>
+      <div class="gold-line"></div>
+    </div>
+    <div class="products-grid" id="ofertasGrid"></div>
+    <div class="section-footer">
+      <a href="#" class="btn btn-outline">Ver Todo</a>
+    </div>
+  </section>
+
+  <!-- LIQUIDACIÓN -->
+  <section class="liquidacion-section" id="liquidacion">
+    <div class="liquidacion-header">
+      <p class="section-label" style="color:#fff8">Últimas unidades</p>
+      <h2>Liquidación</h2>
+      <div class="gold-line"></div>
+      <div class="countdown" id="countdown">
+        <div class="cd-box"><span id="cd-h">00</span><small>Horas</small></div>
+        <div class="cd-sep">:</div>
+        <div class="cd-box"><span id="cd-m">00</span><small>Min</small></div>
+        <div class="cd-sep">:</div>
+        <div class="cd-box"><span id="cd-s">00</span><small>Seg</small></div>
+      </div>
+    </div>
+    <div class="products-grid" id="liquidacionGrid"></div>
+    <div class="section-footer">
+      <a href="#" class="btn btn-gold">Ver Todo en Liquidación</a>
+    </div>
+  </section>
+
+  <!-- NEWSLETTER -->
+  <section class="newsletter">
+    <div class="newsletter-inner">
+      <img src="assets/img/logo.png" alt="" class="nl-logo" />
+      <h3>Unite a nuestra comunidad</h3>
+      <p>Recibí primero las novedades, ofertas exclusivas y acceso anticipado a nuevas colecciones.</p>
+      <form class="nl-form" onsubmit="subscribeNewsletter(event)">
+        <input type="email" placeholder="Tu email..." required />
+        <button type="submit" class="btn btn-gold">Suscribirme</button>
+      </form>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer id="contacto">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <img src="assets/img/logo.png" alt="Vanesa Lopez Tienda" class="footer-logo" />
+        <p>Moda femenina exclusiva.<br />Calidad y estilo en cada prenda.</p>
+        <div class="socials">
+          <a href="#" aria-label="Instagram">
+            <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.881 1.44 1.44 0 0 0 0-2.881z"/></svg>
+          </a>
+          <a href="#" aria-label="Facebook">
+            <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+          </a>
+          <a href="#" aria-label="WhatsApp">
+            <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413z"/></svg>
+          </a>
+        </div>
+      </div>
+      <div class="footer-links">
+        <h4>Tienda</h4>
+        <a href="#nuevos">Nuevos Ingresos</a>
+        <a href="#promociones">Promociones</a>
+        <a href="#ofertas">Ofertas</a>
+        <a href="#liquidacion">Liquidación</a>
+      </div>
+      <div class="footer-links">
+        <h4>Información</h4>
+        <a href="#">Sobre Nosotros</a>
+        <a href="#">Guía de Talles</a>
+        <a href="#">Políticas de Devolución</a>
+        <a href="#">Preguntas Frecuentes</a>
+      </div>
+      <div class="footer-links">
+        <h4>Contacto</h4>
+        <a href="#">📍 Tu ciudad, Argentina</a>
+        <a href="#">📞 +54 9 XXX XXX XXXX</a>
+        <a href="#">✉ info@vanesalopez.com</a>
+        <a href="#">🕐 Lun–Sáb 9:00–20:00</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>© 2025 Vanesa Lopez Tienda. Todos los derechos reservados.</p>
+      <div class="payment-icons">
+        <span>Visa</span><span>Mastercard</span><span>MercadoPago</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- MODAL PRODUCTO -->
+  <div class="modal-overlay" id="modalOverlay">
+    <div class="modal-box">
+      <button class="modal-close" onclick="closeModal()">✕</button>
+      <div class="modal-img">
+        <div class="product-placeholder large" id="modalImg"></div>
+      </div>
+      <div class="modal-info">
+        <p class="modal-badge" id="modalBadge"></p>
+        <h3 id="modalName"></h3>
+        <div class="modal-prices">
+          <span class="modal-price" id="modalPrice"></span>
+          <span class="modal-original" id="modalOriginal"></span>
+        </div>
+        <p class="modal-desc" id="modalDesc"></p>
+        <div class="size-picker">
+          <p>Talle:</p>
+          <div class="sizes">
+            <button class="size-btn active">XS</button>
+            <button class="size-btn">S</button>
+            <button class="size-btn">M</button>
+            <button class="size-btn">L</button>
+            <button class="size-btn">XL</button>
+          </div>
+        </div>
+        <div class="modal-actions">
+          <button class="btn btn-gold full" onclick="addToCart()">Agregar al carrito</button>
+          <button class="btn btn-outline full" onclick="abrirConsulta()">Consultar por WhatsApp</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CART DRAWER -->
+  <div class="cart-overlay" id="cartOverlay" onclick="closeCart()"></div>
+  <aside class="cart-drawer" id="cartDrawer">
+    <div class="cart-head">
+      <h3>Mi Carrito</h3>
+      <button onclick="closeCart()">✕</button>
+    </div>
+    <div class="cart-items" id="cartItems">
+      <p class="cart-empty">Tu carrito está vacío.</p>
+    </div>
+    <div class="cart-foot">
+      <div class="cart-total">
+        <span>Total</span><strong id="cartTotal">$0</strong>
+      </div>
+      <button class="btn btn-gold full">Finalizar compra</button>
+    </div>
+  </aside>
+
+  <!-- MODAL CONSULTA WHATSAPP -->
+  <div class="consulta-overlay" id="consultaOverlay" onclick="if(event.target===this)cerrarConsulta()">
+    <div class="consulta-box">
+      <button class="consulta-close" onclick="cerrarConsulta()">✕</button>
+
+      <div class="consulta-producto" id="consultaProducto">
+        <!-- Imagen + nombre del producto se inyectan por JS -->
+      </div>
+
+      <div class="consulta-form-wrap">
+        <div class="consulta-header">
+          <div class="wsp-icon">
+            <svg width="22" height="22" fill="#25D366" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413z"/></svg>
+          </div>
+          <div>
+            <h3>Consultar por WhatsApp</h3>
+            <p>Te respondemos a la brevedad</p>
+          </div>
+        </div>
+
+        <form id="consultaForm" onsubmit="enviarConsulta(event)" novalidate>
+          <div class="cform-row">
+            <div class="cform-group">
+              <label>Nombre *</label>
+              <input type="text" id="cNombre" placeholder="Tu nombre completo" required />
+            </div>
+            <div class="cform-group">
+              <label>Teléfono *</label>
+              <input type="tel" id="cTelefono" placeholder="Ej: 2954 123456" required />
+            </div>
+          </div>
+
+          <div class="cform-row">
+            <div class="cform-group">
+              <label>Provincia *</label>
+              <select id="cProvincia" required onchange="cargarCiudades()">
+                <option value="">Seleccioná una provincia...</option>
+              </select>
+            </div>
+            <div class="cform-group">
+              <label>Ciudad / Localidad *</label>
+              <select id="cCiudad" required disabled>
+                <option value="">Primero elegí provincia</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="cform-group full">
+            <label>¿Qué querés consultar? *</label>
+            <textarea id="cConsulta" rows="3" placeholder="Escribí tu consulta sobre el producto, talle, disponibilidad, formas de pago..." required></textarea>
+          </div>
+
+          <button type="submit" class="btn-wsp">
+            <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413z"/></svg>
+            Enviar consulta por WhatsApp
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script src="assets/js/provincias.js"></script>
+  <script src="assets/js/store.js"></script>
+</body>
+</html>

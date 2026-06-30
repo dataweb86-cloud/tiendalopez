@@ -1,0 +1,145 @@
+/* ─── MODAL CONSULTA WHATSAPP ──────────────────── */
+.consulta-overlay {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,.65);
+  z-index: 210;
+  display: flex; align-items: center; justify-content: center;
+  padding: 20px;
+  opacity: 0; pointer-events: none;
+  transition: opacity .3s ease;
+  backdrop-filter: blur(4px);
+}
+.consulta-overlay.active { opacity: 1; pointer-events: all; }
+
+.consulta-box {
+  background: var(--white);
+  border-radius: 4px;
+  width: 100%; max-width: 760px;
+  max-height: 90vh; overflow-y: auto;
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  position: relative;
+  transform: translateY(24px) scale(.97);
+  transition: transform .3s ease;
+  box-shadow: 0 24px 64px rgba(0,0,0,.25);
+}
+.consulta-overlay.active .consulta-box { transform: translateY(0) scale(1); }
+
+.consulta-close {
+  position: absolute; top: 14px; right: 14px;
+  width: 32px; height: 32px;
+  background: #f5f5f5; border-radius: 50%;
+  font-size: .85rem; color: #555;
+  display: flex; align-items: center; justify-content: center;
+  z-index: 5; cursor: pointer; border: none;
+  transition: background .2s;
+}
+.consulta-close:hover { background: #eee; }
+
+/* Columna imagen */
+.consulta-producto {
+  background: var(--light);
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  padding: 24px 16px;
+  border-right: 1px solid #eee;
+}
+.consulta-prod-img {
+  width: 140px; height: 180px;
+  object-fit: cover; border-radius: 2px;
+  box-shadow: 0 4px 16px rgba(0,0,0,.12);
+}
+.consulta-prod-placeholder {
+  width: 140px; height: 180px;
+  border-radius: 2px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: .65rem; color: rgba(255,255,255,.4);
+  letter-spacing: .1em; text-align: center;
+}
+.consulta-prod-nombre {
+  font-family: var(--font-serif);
+  font-size: 1rem; font-weight: 400;
+  text-align: center; margin-top: 14px;
+  line-height: 1.3;
+}
+.consulta-prod-precio {
+  font-size: .85rem; font-weight: 600;
+  color: var(--gold); margin-top: 6px;
+}
+.consulta-prod-badge {
+  font-size: .6rem; letter-spacing: .15em;
+  text-transform: uppercase; color: var(--gray);
+  margin-top: 4px;
+}
+
+/* Columna formulario */
+.consulta-form-wrap { padding: 28px 28px 24px; }
+
+.consulta-header {
+  display: flex; align-items: center; gap: 12px;
+  margin-bottom: 20px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #f0ece4;
+}
+.wsp-icon {
+  width: 44px; height: 44px;
+  background: #e8fef0; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.consulta-header h3 {
+  font-family: var(--font-serif);
+  font-size: 1.2rem; font-weight: 400;
+  margin-bottom: 2px;
+}
+.consulta-header p { font-size: .75rem; color: var(--gray); }
+
+/* Form fields */
+.cform-row {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 14px; margin-bottom: 14px;
+}
+.cform-group { display: flex; flex-direction: column; gap: 5px; }
+.cform-group.full { grid-column: 1/-1; margin-bottom: 14px; }
+.cform-group label {
+  font-size: .62rem; letter-spacing: .12em;
+  text-transform: uppercase; font-weight: 600; color: var(--gray);
+}
+.cform-group input,
+.cform-group select,
+.cform-group textarea {
+  padding: 10px 13px;
+  border: 1px solid #e0d8cc; border-radius: 2px;
+  font-family: var(--font-sans); font-size: .82rem;
+  color: var(--dark); background: var(--white);
+  outline: none; transition: border .2s;
+  width: 100%;
+}
+.cform-group input:focus,
+.cform-group select:focus,
+.cform-group textarea:focus { border-color: #25D366; }
+.cform-group select:disabled { background: #f9f9f9; color: #aaa; }
+.cform-group textarea { resize: vertical; min-height: 72px; }
+
+/* Submit WhatsApp */
+.btn-wsp {
+  width: 100%; margin-top: 8px;
+  padding: 14px 24px;
+  background: #25D366; color: var(--white);
+  border: none; border-radius: 2px; cursor: pointer;
+  font-family: var(--font-sans); font-size: .78rem;
+  font-weight: 700; letter-spacing: .12em; text-transform: uppercase;
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+  transition: background .2s, transform .15s;
+}
+.btn-wsp:hover { background: #1ebe5a; transform: translateY(-1px); }
+.btn-wsp:active { transform: translateY(0); }
+
+/* Responsive */
+@media (max-width: 600px) {
+  .consulta-box { grid-template-columns: 1fr; }
+  .consulta-producto { border-right: none; border-bottom: 1px solid #eee; padding: 20px; flex-direction: row; gap: 16px; justify-content: flex-start; }
+  .consulta-prod-img, .consulta-prod-placeholder { width: 80px; height: 100px; }
+  .cform-row { grid-template-columns: 1fr; }
+  .consulta-form-wrap { padding: 20px 16px; }
+}
