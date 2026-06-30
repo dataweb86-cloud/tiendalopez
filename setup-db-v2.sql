@@ -59,3 +59,4 @@ CREATE TABLE IF NOT EXISTS proveedores (
 );
 ALTER TABLE proveedores ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Admin proveedores" ON proveedores FOR ALL USING (auth.role() = 'service_role');
+ALTER TABLE productos ADD COLUMN IF NOT EXISTS talles TEXT;

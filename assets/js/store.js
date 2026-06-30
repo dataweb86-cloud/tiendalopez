@@ -98,16 +98,25 @@ function openModal(id) {
     img.style.justifyContent = 'center';
     img.innerHTML = `<span style="color:rgba(255,255,255,.3);font-size:.7rem;letter-spacing:.1em;font-family:var(--font-sans)">${p.categoria || ''}</span>`;
   }
+  // Talles dinámicos
+  const sizesEl = document.querySelector('.sizes');
+  const talles = (p.talles || '').split(',').map(s=>s.trim()).filter(Boolean);
+  if (talles.length) {
+    sizesEl.innerHTML = talles.map((t,i) =>
+      `<button class="size-btn${i===0?' active':''}" onclick="selectSize(this)">${t}</button>`
+    ).join('');
+    document.querySelector('.size-picker').style.display = '';
+  } else {
+    document.querySelector('.size-picker').style.display = 'none';
+  }
+
   document.getElementById('modalOverlay').classList.add('active');
   document.body.style.overflow = 'hidden';
+}
 
-  document.querySelectorAll('.size-btn').forEach((b, i) => {
-    b.classList.toggle('active', i === 0);
-    b.onclick = () => {
-      document.querySelectorAll('.size-btn').forEach(x => x.classList.remove('active'));
-      b.classList.add('active');
-    };
-  });
+function selectSize(btn) {
+  document.querySelectorAll('.size-btn').forEach(x => x.classList.remove('active'));
+  btn.classList.add('active');
 }
 
 function closeModal() {

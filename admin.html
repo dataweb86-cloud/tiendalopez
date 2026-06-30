@@ -84,6 +84,11 @@
     .margen-display.show{display:block}
     .margen-display strong{font-size:.9rem}
     /* ── UPLOAD ── */
+    /* TALLES */
+    .talle-chk{display:inline-flex;align-items:center;gap:5px;padding:6px 12px;border:1px solid #e0d8cc;border-radius:2px;font-size:.72rem;font-weight:500;cursor:pointer;transition:all .15s;text-transform:uppercase;letter-spacing:.05em;user-select:none;color:var(--dark)}
+    .talle-chk input{display:none}
+    .talle-chk:has(input:checked){background:var(--dark);color:var(--white);border-color:var(--dark)}
+    .talle-chk:hover{border-color:var(--dark)}
     .upload-area{border:2px dashed #e0d8cc;border-radius:4px;padding:24px;text-align:center;cursor:pointer;transition:all .2s;background:#faf8f5}
     .upload-area:hover{border-color:var(--gold);background:#fdf9f0}
     .upload-area p{font-size:.78rem;color:#888;margin:6px 0 3px}
@@ -325,6 +330,28 @@
                 <option value="true">Activo — visible en tienda</option>
                 <option value="false">Oculto</option>
               </select></div>
+            <div class="fg full">
+              <label>Talles disponibles</label>
+              <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:4px" id="tallesWrap">
+                <label class="talle-chk"><input type="checkbox" value="XS" /> XS</label>
+                <label class="talle-chk"><input type="checkbox" value="S" /> S</label>
+                <label class="talle-chk"><input type="checkbox" value="M" /> M</label>
+                <label class="talle-chk"><input type="checkbox" value="L" /> L</label>
+                <label class="talle-chk"><input type="checkbox" value="XL" /> XL</label>
+                <label class="talle-chk"><input type="checkbox" value="XXL" /> XXL</label>
+                <label class="talle-chk"><input type="checkbox" value="Único" /> Único</label>
+                <label class="talle-chk"><input type="checkbox" value="32" /> 32</label>
+                <label class="talle-chk"><input type="checkbox" value="34" /> 34</label>
+                <label class="talle-chk"><input type="checkbox" value="36" /> 36</label>
+                <label class="talle-chk"><input type="checkbox" value="38" /> 38</label>
+                <label class="talle-chk"><input type="checkbox" value="40" /> 40</label>
+                <label class="talle-chk"><input type="checkbox" value="42" /> 42</label>
+                <label class="talle-chk"><input type="checkbox" value="44" /> 44</label>
+                <label class="talle-chk"><input type="checkbox" value="46" /> 46</label>
+              </div>
+              <p style="font-size:.62rem;color:#bbb;margin-top:6px">O escribilos manualmente separados por coma:</p>
+              <input type="text" id="fTallesCustom" placeholder="Ej: S, M, L, XL o 38, 40, 42" style="margin-top:4px" oninput="syncTallesCustom()" />
+            </div>
             <div class="fg full"><label>Descripción</label>
               <textarea id="fDesc" placeholder="Descripción del producto..."></textarea></div>
           </div>
@@ -747,6 +774,7 @@ function editarProducto(id) {
   document.getElementById('fPrecioOriginal').value=p.precio_original||'';
   document.getElementById('fImagen').value=p.imagen_url||'';
   document.getElementById('fImagenUrl').value=p.imagen_url||'';
+  setTalles(p.talles||'');
   if(p.imagen_url){previewImgAdmin(p.imagen_url)}
   document.getElementById('formProdTitle').textContent='Editar Producto';
   recalcMargen();
@@ -825,6 +853,7 @@ async function saveProduct(e) {
     precio_original:parseInt(document.getElementById('fPrecioOriginal').value)||null,
     margen_pct:costo&&precio?parseFloat(fmtPct(costo,precio)):null,
     imagen_url:document.getElementById('fImagen').value.trim()||null,
+    talles:getTalles()||null,
   };
   try{
     if(id){await api(`/rest/v1/productos?id=eq.${id}`,{method:'PATCH',body:JSON.stringify(body)});toast('Producto actualizado ✓');}
@@ -843,6 +872,7 @@ function resetProdForm() {
   document.getElementById('uploadArea').classList.remove('has-img');
   document.getElementById('uploadProgress').style.display='none';
   document.getElementById('margenDisplay').innerHTML='Ingresá costo y precio';
+  setTalles('');
   setModoPrecio('directo');
 }
 
@@ -1111,7 +1141,7 @@ async function uploadToStorage(file){
     bar.style.width='60%';
     const res=await fetch(`${SB_URL}/storage/v1/object/productos/${fn}`,{
       method:'POST',
-      headers:{'apikey':SB_SERVICE,'Authorization':`Bearer ${SB_SERVICE}`,'Content-Type':file.type,'x-upsert':'true'},
+      headers:{'apikey':SB_SERVICE,'Authorization':`Bearer ${SB_SERVICE}`,'Content-Type':file.type,'x-upsert':'true','Cache-Control':'3600'},
       body:file
     });
     if(!res.ok)throw new Error((await res.json().catch(()=>({message:res.statusText}))).message);
@@ -1144,6 +1174,39 @@ function toast(msg,err=false){
   el.classList.add('show');clearTimeout(_tt);
   _tt=setTimeout(()=>el.classList.remove('show'),2800);
 }
+
+/* ── TALLES ── */
+function getTalles() {
+  const checks = [...document.querySelectorAll('#tallesWrap input:checked')].map(i=>i.value);
+  const custom = document.getElementById('fTallesCustom').value.trim();
+  if (custom) return custom;
+  return checks.join(',');
+}
+
+function setTalles(str) {
+  // reset todos
+  document.querySelectorAll('#tallesWrap input').forEach(i=>i.checked=false);
+  document.getElementById('fTallesCustom').value='';
+  if (!str) return;
+  const vals = str.split(',').map(s=>s.trim());
+  let allFound = true;
+  vals.forEach(v=>{
+    const chk = document.querySelector(`#tallesWrap input[value="${v}"]`);
+    if (chk) chk.checked=true; else allFound=false;
+  });
+  if (!allFound) document.getElementById('fTallesCustom').value=str;
+}
+
+function syncTallesCustom() {
+  // si escribe manual, desmarcar checkboxes
+  document.querySelectorAll('#tallesWrap input').forEach(i=>i.checked=false);
+}
+
+document.querySelectorAll('#tallesWrap input').forEach(chk=>{
+  chk.addEventListener('change',()=>{
+    document.getElementById('fTallesCustom').value='';
+  });
+});
 
 /* ── LOGIN ── */
 function doLogin(e) {
