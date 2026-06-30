@@ -784,7 +784,9 @@ footer {
     grid-template-columns: 1fr; border-radius: 12px 12px 0 0;
     max-height: 90vh; overflow-y: auto;
   }
-  .modal-img { display: none; }
+  .modal-img { background: var(--black); }
+  .modal-img #modalImg { height: auto; min-height: 280px; max-height: 60vh; }
+  .modal-img #modalImg img { object-fit: contain !important; max-height: 60vh; }
   .modal-info { padding: 28px 20px; }
   /* Cart */
   .cart-drawer { width: 100%; }
