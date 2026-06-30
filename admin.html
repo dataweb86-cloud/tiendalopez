@@ -89,12 +89,15 @@
     .talle-chk input{display:none}
     .talle-chk:has(input:checked){background:var(--dark);color:var(--white);border-color:var(--dark)}
     .talle-chk:hover{border-color:var(--dark)}
-    .upload-area{border:2px dashed #e0d8cc;border-radius:4px;padding:24px;text-align:center;cursor:pointer;transition:all .2s;background:#faf8f5}
+    .upload-area{position:relative;border:2px dashed #e0d8cc;border-radius:4px;padding:16px 8px;text-align:center;cursor:pointer;transition:all .2s;background:#faf8f5}
     .upload-area:hover{border-color:var(--gold);background:#fdf9f0}
     .upload-area p{font-size:.78rem;color:#888;margin:6px 0 3px}
     .upload-area small{font-size:.66rem;color:#bbb}
-    .upload-preview-img{width:100%;max-height:180px;object-fit:contain;border-radius:2px}
+    .upload-preview-img{width:100%;max-height:140px;object-fit:contain;border-radius:2px}
     .upload-area.has-img{padding:6px;border-style:solid;border-color:var(--gold)}
+    .img-remove-btn{position:absolute;top:4px;right:4px;width:20px;height:20px;border-radius:50%;border:none;background:rgba(0,0,0,.65);color:#fff;font-size:.7rem;line-height:1;cursor:pointer;z-index:2}
+    .img-remove-btn:hover{background:var(--red)}
+    @media (max-width:700px){#imgSlots{grid-template-columns:1fr !important}}
     /* ── BUTTONS ── */
     .btn{padding:10px 22px;font-family:var(--sans);font-size:.68rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;border-radius:2px;cursor:pointer;border:none;transition:all .2s;display:inline-flex;align-items:center;gap:6px}
     .btn-gold{background:var(--gold);color:var(--black)}.btn-gold:hover{background:var(--gold-light)}
@@ -395,26 +398,11 @@
           </div>
         </div>
 
-        <!-- Imagen -->
+        <!-- Imagenes -->
         <div class="form-card">
-          <h3>Imagen del producto</h3>
-          <div class="upload-area" id="uploadArea" onclick="document.getElementById('fImagenFile').click()">
-            <div id="uploadPlaceholder">
-              <svg width="28" height="28" fill="none" stroke="#bbb" stroke-width="1.5" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-              <p>Hacé click o arrastrá una imagen</p>
-              <small>JPG, PNG, WEBP — máx 5 MB</small>
-            </div>
-            <img id="uploadPreviewImg" class="upload-preview-img" style="display:none" />
-          </div>
-          <input type="file" id="fImagenFile" accept="image/*" style="display:none" onchange="handleFileSelect(this)" />
-          <div id="uploadProgress" style="display:none;margin-top:8px">
-            <div class="prog-bar"><div class="prog-fill" id="uploadBar" style="width:0%"></div></div>
-            <p style="font-size:.68rem;color:#888;margin-top:4px" id="uploadStatus">Subiendo...</p>
-          </div>
-          <input type="hidden" id="fImagen" />
-          <p style="font-size:.64rem;color:#aaa;margin-top:10px">O pegá una URL:</p>
-          <input type="url" id="fImagenUrl" placeholder="https://..." style="margin-top:4px"
-            oninput="previewImgAdmin(this.value);document.getElementById('fImagen').value=this.value" />
+          <h3>Fotos del producto (hasta 3)</h3>
+          <div id="imgSlots" style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px"></div>
+          <p style="font-size:.64rem;color:#aaa;margin-top:10px">JPG, PNG, WEBP — máx 15 MB por foto. La primera es la principal.</p>
         </div>
 
         <div style="display:flex;gap:12px;justify-content:flex-end">
@@ -773,9 +761,12 @@ function editarProducto(id) {
   document.getElementById('fPrecio').value=p.precio||'';
   document.getElementById('fPrecioOriginal').value=p.precio_original||'';
   document.getElementById('fImagen').value=p.imagen_url||'';
-  document.getElementById('fImagenUrl').value=p.imagen_url||'';
+  document.getElementById('fImagen2').value=p.imagen_url2||'';
+  document.getElementById('fImagen3').value=p.imagen_url3||'';
   setTalles(p.talles||'');
-  if(p.imagen_url){previewImgAdmin(p.imagen_url)}
+  if(p.imagen_url){previewImgAdmin(p.imagen_url,1)}
+  if(p.imagen_url2){previewImgAdmin(p.imagen_url2,2)}
+  if(p.imagen_url3){previewImgAdmin(p.imagen_url3,3)}
   document.getElementById('formProdTitle').textContent='Editar Producto';
   recalcMargen();
   showPage('nuevo-producto');
@@ -853,6 +844,8 @@ async function saveProduct(e) {
     precio_original:parseInt(document.getElementById('fPrecioOriginal').value)||null,
     margen_pct:costo&&precio?parseFloat(fmtPct(costo,precio)):null,
     imagen_url:document.getElementById('fImagen').value.trim()||null,
+    imagen_url2:document.getElementById('fImagen2').value.trim()||null,
+    imagen_url3:document.getElementById('fImagen3').value.trim()||null,
     talles:getTalles()||null,
   };
   try{
@@ -867,10 +860,13 @@ function resetProdForm() {
   document.getElementById('prodForm').reset();
   document.getElementById('editId').value='';
   document.getElementById('formProdTitle').textContent='Nuevo Producto';
-  document.getElementById('uploadPreviewImg').style.display='none';
-  document.getElementById('uploadPlaceholder').style.display='';
-  document.getElementById('uploadArea').classList.remove('has-img');
-  document.getElementById('uploadProgress').style.display='none';
+  [1,2,3].forEach(i=>{
+    document.getElementById('uploadPreviewImg'+i).style.display='none';
+    document.getElementById('uploadPlaceholder'+i).style.display='';
+    document.getElementById('uploadArea'+i).classList.remove('has-img');
+    document.getElementById('uploadProgress'+i).style.display='none';
+    const rm=document.getElementById('imgRemove'+i); if(rm) rm.style.display='none';
+  });
   document.getElementById('margenDisplay').innerHTML='Ingresá costo y precio';
   setTalles('');
   setModoPrecio('directo');
@@ -1114,23 +1110,64 @@ function toggleOfertaDetalle(){
 }
 
 /* ══════════════════════════════════════
-   IMAGEN UPLOAD
+   IMAGENES UPLOAD (hasta 3 por producto)
 ══════════════════════════════════════ */
-function handleFileSelect(input){
+const MAX_IMG_MB = 15;
+const IMG_FIELDS = ['fImagen','fImagen2','fImagen3'];
+
+function renderImgSlots(){
+  const wrap=document.getElementById('imgSlots');
+  wrap.innerHTML=[1,2,3].map(i=>`
+    <div>
+      <div class="upload-area" id="uploadArea${i}" onclick="document.getElementById('fImagenFile${i}').click()">
+        <div id="uploadPlaceholder${i}">
+          <svg width="24" height="24" fill="none" stroke="#bbb" stroke-width="1.5" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+          <p style="font-size:.66rem">${i===1?'Foto principal':'Foto '+i}</p>
+        </div>
+        <img id="uploadPreviewImg${i}" class="upload-preview-img" style="display:none" />
+        ${i>1?`<button type="button" class="img-remove-btn" onclick="event.stopPropagation();clearImgSlot(${i})" id="imgRemove${i}" style="display:none">✕</button>`:''}
+      </div>
+      <input type="file" id="fImagenFile${i}" accept="image/*" style="display:none" onchange="handleFileSelect(this,${i})" />
+      <div id="uploadProgress${i}" style="display:none;margin-top:6px">
+        <div class="prog-bar"><div class="prog-fill" id="uploadBar${i}" style="width:0%"></div></div>
+        <p style="font-size:.62rem;color:#888;margin-top:3px" id="uploadStatus${i}">Subiendo...</p>
+      </div>
+      <input type="hidden" id="${IMG_FIELDS[i-1]}" />
+    </div>
+  `).join('');
+  [1,2,3].forEach(i=>{
+    const ua=document.getElementById('uploadArea'+i);
+    ua.addEventListener('dragover',e=>{e.preventDefault();ua.style.borderColor='var(--gold)'});
+    ua.addEventListener('dragleave',()=>{ua.style.borderColor=''});
+    ua.addEventListener('drop',e=>{
+      e.preventDefault();ua.style.borderColor='';
+      const f=e.dataTransfer.files[0];
+      if(!f||!f.type.startsWith('image/'))return;
+      if(f.size>MAX_IMG_MB*1024*1024){toast(`Imagen máx ${MAX_IMG_MB} MB`,true);return}
+      uploadToStorage(f,i);
+    });
+  });
+}
+renderImgSlots();
+
+function handleFileSelect(input,i){
   const file=input.files[0];if(!file)return;
-  if(file.size>5*1024*1024){toast('Imagen máx 5 MB',true);return}
-  uploadToStorage(file);
+  if(file.size>MAX_IMG_MB*1024*1024){toast(`Imagen máx ${MAX_IMG_MB} MB`,true);return}
+  uploadToStorage(file,i);
 }
 
-const ua=document.getElementById('uploadArea');
-ua.addEventListener('dragover',e=>{e.preventDefault();ua.style.borderColor='var(--gold)'});
-ua.addEventListener('dragleave',()=>{ua.style.borderColor=''});
-ua.addEventListener('drop',e=>{e.preventDefault();ua.style.borderColor='';const f=e.dataTransfer.files[0];if(f&&f.type.startsWith('image/'))uploadToStorage(f)});
+function clearImgSlot(i){
+  document.getElementById(IMG_FIELDS[i-1]).value='';
+  document.getElementById('uploadPreviewImg'+i).style.display='none';
+  document.getElementById('uploadPlaceholder'+i).style.display='';
+  document.getElementById('uploadArea'+i).classList.remove('has-img');
+  const rm=document.getElementById('imgRemove'+i); if(rm) rm.style.display='none';
+}
 
-async function uploadToStorage(file){
-  const prog=document.getElementById('uploadProgress'),bar=document.getElementById('uploadBar');
-  const status=document.getElementById('uploadStatus'),pi=document.getElementById('uploadPreviewImg');
-  const ph=document.getElementById('uploadPlaceholder'),area=document.getElementById('uploadArea');
+async function uploadToStorage(file,i=1){
+  const prog=document.getElementById('uploadProgress'+i),bar=document.getElementById('uploadBar'+i);
+  const status=document.getElementById('uploadStatus'+i),pi=document.getElementById('uploadPreviewImg'+i);
+  const ph=document.getElementById('uploadPlaceholder'+i),area=document.getElementById('uploadArea'+i);
   const reader=new FileReader();
   reader.onload=e=>{pi.src=e.target.result;pi.style.display='';ph.style.display='none';area.classList.add('has-img')};
   reader.readAsDataURL(file);
@@ -1147,21 +1184,22 @@ async function uploadToStorage(file){
     if(!res.ok)throw new Error((await res.json().catch(()=>({message:res.statusText}))).message);
     bar.style.width='100%';
     const url=`${SB_URL}/storage/v1/object/public/productos/${fn}`;
-    document.getElementById('fImagen').value=url;
-    document.getElementById('fImagenUrl').value=url;
+    document.getElementById(IMG_FIELDS[i-1]).value=url;
     pi.src=url;
+    const rm=document.getElementById('imgRemove'+i); if(rm) rm.style.display='';
     status.textContent='✓ Imagen subida';status.style.color='green';
     setTimeout(()=>{prog.style.display='none';bar.style.width='0%';status.style.color=''},2500);
     toast('Imagen subida ✓');
   }catch(e){bar.style.width='0%';status.textContent='✗ '+e.message;status.style.color='var(--red)';toast('Error upload: '+e.message,true);}
 }
 
-function previewImgAdmin(url){
+function previewImgAdmin(url,i=1){
   if(!url)return;
-  const pi=document.getElementById('uploadPreviewImg');
-  const ph=document.getElementById('uploadPlaceholder');
+  const pi=document.getElementById('uploadPreviewImg'+i);
+  const ph=document.getElementById('uploadPlaceholder'+i);
   pi.src=url;pi.style.display='';ph.style.display='none';
-  document.getElementById('uploadArea').classList.add('has-img');
+  document.getElementById('uploadArea'+i).classList.add('has-img');
+  if(i>1){const rm=document.getElementById('imgRemove'+i); if(rm) rm.style.display=''}
 }
 
 /* ══════════════════════════════════════

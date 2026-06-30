@@ -1,5 +1,6 @@
 /* ─── CONFIG ────────────────────────────────────── */
 const WA_NUMBER = '5492954589194'; // +54 9 2954 58-9194
+const MP_ALIAS  = 'mpvanelopez';
 
 /* ─── CONFIG SUPABASE ───────────────────────────── */
 const SB_URL  = 'https://mqqwfphxqqnzqlgskjpm.supabase.co';
@@ -88,8 +89,10 @@ function openModal(id) {
   document.getElementById('modalOriginal').textContent = p.precio_original ? fmt(p.precio_original) : '';
   document.getElementById('modalDesc').textContent = p.descripcion || '';
   const img = document.getElementById('modalImg');
-  if (p.imagen_url) {
-    img.innerHTML = `<img src="${p.imagen_url}" alt="${p.nombre}" style="width:100%;height:100%;object-fit:cover" />`;
+  const thumbs = document.getElementById('modalThumbs');
+  const images = [p.imagen_url, p.imagen_url2, p.imagen_url3].filter(Boolean);
+  if (images.length) {
+    img.innerHTML = `<img src="${images[0]}" alt="${p.nombre}" style="width:100%;height:100%;object-fit:cover" />`;
   } else {
     img.style.background = COLORS[id % COLORS.length];
     img.style.height = '400px';
@@ -97,6 +100,15 @@ function openModal(id) {
     img.style.alignItems = 'center';
     img.style.justifyContent = 'center';
     img.innerHTML = `<span style="color:rgba(255,255,255,.3);font-size:.7rem;letter-spacing:.1em;font-family:var(--font-sans)">${p.categoria || ''}</span>`;
+  }
+  if (images.length > 1) {
+    thumbs.style.display = '';
+    thumbs.innerHTML = images.map((src, i) =>
+      `<img src="${src}" class="${i === 0 ? 'active' : ''}" onclick="selectModalImg('${src.replace(/'/g, "\\'")}', this)" />`
+    ).join('');
+  } else {
+    thumbs.style.display = 'none';
+    thumbs.innerHTML = '';
   }
   // Talles dinámicos
   const sizesEl = document.querySelector('.sizes');
@@ -112,6 +124,13 @@ function openModal(id) {
 
   document.getElementById('modalOverlay').classList.add('active');
   document.body.style.overflow = 'hidden';
+}
+
+function selectModalImg(src, thumbEl) {
+  const img = document.getElementById('modalImg').querySelector('img');
+  if (img) img.src = src;
+  document.querySelectorAll('.modal-thumbs img').forEach(t => t.classList.remove('active'));
+  thumbEl.classList.add('active');
 }
 
 function selectSize(btn) {
@@ -203,6 +222,37 @@ function closeCart() {
 }
 
 document.querySelector('.cart-btn').addEventListener('click', openCart);
+
+/* ─── CHECKOUT ──────────────────────────────────── */
+function abrirCheckout() {
+  if (!cart.length) { showToast('Tu carrito está vacío'); return; }
+  document.getElementById('checkoutOverlay').classList.add('active');
+}
+
+function cerrarCheckout() {
+  document.getElementById('checkoutOverlay').classList.remove('active');
+}
+
+function copiarAlias() {
+  navigator.clipboard?.writeText(MP_ALIAS);
+  showToast('Alias copiado: ' + MP_ALIAS);
+}
+
+function finalizarConMetodo(metodo) {
+  const total = cart.reduce((s, i) => s + i.precio * i.qty, 0);
+  const detalle = cart.map(i => `• ${i.nombre} (talle ${i.size}) x${i.qty} — ${fmt(i.precio * i.qty)}`).join('\n');
+  const metodoTxt = metodo === 'mp' ? `Mercado Pago — alias ${MP_ALIAS}` : 'Efectivo';
+  let msg = `🛍️ *Pedido — Vanesa Lopez Tienda*\n\n${detalle}\n\n*Total: ${fmt(total)}*\n💳 *Método de pago:* ${metodoTxt}`;
+  if (metodo === 'mp') msg += `\n\nEnvío el comprobante de la transferencia por acá.`;
+  const url = `https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(msg)}`;
+  window.open(url, '_blank');
+  cerrarCheckout();
+  closeCart();
+}
+
+document.getElementById('checkoutOverlay')?.addEventListener('click', e => {
+  if (e.target === document.getElementById('checkoutOverlay')) cerrarCheckout();
+});
 
 /* ─── TOAST ─────────────────────────────────────── */
 function showToast(msg) {
