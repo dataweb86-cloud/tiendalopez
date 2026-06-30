@@ -46,6 +46,9 @@ function renderProducts(list, containerId) {
     <div class="product-card" onclick="openModal(${p.id})">
       <div class="product-img">
         ${p.badge ? `<div class="product-badge ${p.badge_tipo || ''}">${p.badge}</div>` : ''}
+        <button class="share-btn" onclick="shareProduct(${p.id},event)" aria-label="Compartir" title="Compartir">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#222" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.6" y1="13.5" x2="15.4" y2="17.5"/><line x1="15.4" y1="6.5" x2="8.6" y2="10.5"/></svg>
+        </button>
         ${p.imagen_url
           ? `<img src="${p.imagen_url}" alt="${p.nombre}" style="width:100%;height:100%;object-fit:cover" />`
           : `<div class="product-placeholder" style="background:${COLORS[i % COLORS.length]}">
@@ -248,6 +251,39 @@ function finalizarConMetodo(metodo) {
   window.open(url, '_blank');
   cerrarCheckout();
   closeCart();
+  cart = [];
+  updateCartUI();
+  mostrarSuccess('¡Gracias por tu compra!', 'Te vamos a contactar por WhatsApp para confirmar el pedido y coordinar la entrega.');
+}
+
+/* ─── MODAL ÉXITO ───────────────────────────────── */
+function mostrarSuccess(titulo, mensaje) {
+  document.getElementById('successTitle').textContent = titulo;
+  document.getElementById('successMsg').textContent = mensaje;
+  document.getElementById('successOverlay').classList.add('active');
+}
+
+function cerrarSuccess() {
+  document.getElementById('successOverlay').classList.remove('active');
+}
+
+document.getElementById('successOverlay')?.addEventListener('click', e => {
+  if (e.target === document.getElementById('successOverlay')) cerrarSuccess();
+});
+
+/* ─── COMPARTIR PRODUCTO ────────────────────────── */
+function shareProduct(id, ev) {
+  if (ev) ev.stopPropagation();
+  const p = getProduct(id);
+  if (!p) return;
+  const url = `${location.origin}${location.pathname}?producto=${id}`;
+  const text = `Mirá esto en Vanesa Lopez Tienda: ${p.nombre} — ${fmt(p.precio)}`;
+  if (navigator.share) {
+    navigator.share({ title: p.nombre, text, url }).catch(() => {});
+  } else {
+    navigator.clipboard?.writeText(`${text}\n${url}`);
+    showToast('Link copiado para compartir');
+  }
 }
 
 document.getElementById('checkoutOverlay')?.addEventListener('click', e => {
@@ -429,7 +465,7 @@ async function enviarConsulta(e) {
   window.open(url, '_blank');
   cerrarConsulta();
   document.getElementById('consultaForm').reset();
-  showToast('¡Redirigiendo a WhatsApp! 💬');
+  mostrarSuccess('¡Consulta enviada!', 'Gracias por escribirnos. Te vamos a responder por WhatsApp a la brevedad.');
 }
 
 /* ─── INIT ──────────────────────────────────────── */

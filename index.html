@@ -250,6 +250,10 @@
         <div class="modal-actions">
           <button class="btn btn-gold full" onclick="addToCart()">Agregar al carrito</button>
           <button class="btn btn-outline full" onclick="abrirConsulta()">Consultar por WhatsApp</button>
+          <button type="button" class="modal-share-btn" onclick="shareProduct(currentProduct?.id,event)">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.6" y1="13.5" x2="15.4" y2="17.5"/><line x1="15.4" y1="6.5" x2="8.6" y2="10.5"/></svg>
+            Compartir producto
+          </button>
         </div>
       </div>
     </div>
@@ -275,26 +279,36 @@
 
   <!-- MODAL CHECKOUT / PAGO -->
   <div class="consulta-overlay" id="checkoutOverlay">
-    <div class="consulta-box" style="max-width:420px">
+    <div class="checkout-box">
       <button class="modal-close" onclick="cerrarCheckout()">✕</button>
-      <h3 style="font-family:var(--font-serif);font-weight:300;font-size:1.4rem;margin-bottom:6px">¿Cómo pagás?</h3>
-      <p style="font-size:.78rem;color:var(--gray);margin-bottom:20px">Elegí el método y te confirmamos el pedido por WhatsApp.</p>
+      <h3 class="checkout-title">¿Cómo pagás?</h3>
+      <p class="checkout-sub">Elegí el método y te confirmamos el pedido por WhatsApp.</p>
 
-      <div style="border:1px solid #eee;border-radius:4px;padding:16px;margin-bottom:14px">
+      <div class="checkout-option">
         <strong style="font-size:.85rem">Mercado Pago</strong>
         <p style="font-size:.78rem;color:var(--gray);margin:6px 0 10px">Transferí a este alias:</p>
-        <div style="display:flex;align-items:center;gap:8px;background:var(--light);padding:10px 12px;border-radius:4px">
+        <div class="checkout-alias">
           <code style="font-size:.85rem;font-weight:600;letter-spacing:.02em">mpvanelopez</code>
           <button type="button" class="btn btn-outline" style="margin-left:auto;padding:4px 10px;font-size:.68rem" onclick="copiarAlias()">Copiar</button>
         </div>
         <button type="button" class="btn btn-gold full" style="margin-top:12px" onclick="finalizarConMetodo('mp')">Ya transferí / voy a transferir</button>
       </div>
 
-      <div style="border:1px solid #eee;border-radius:4px;padding:16px">
+      <div class="checkout-option">
         <strong style="font-size:.85rem">Efectivo</strong>
         <p style="font-size:.78rem;color:var(--gray);margin:6px 0 10px">Coordinamos el pago al retirar o entregar.</p>
         <button type="button" class="btn btn-outline full" onclick="finalizarConMetodo('efectivo')">Pagar en efectivo</button>
       </div>
+    </div>
+  </div>
+
+  <!-- MODAL ÉXITO / AGRADECIMIENTO -->
+  <div class="success-overlay" id="successOverlay">
+    <div class="success-box">
+      <div class="success-icon">✓</div>
+      <h3 class="success-title" id="successTitle">¡Gracias!</h3>
+      <p class="success-msg" id="successMsg">Recibimos tu pedido. Te vamos a contactar por WhatsApp a la brevedad.</p>
+      <button type="button" class="btn btn-gold full" onclick="cerrarSuccess()">Entendido</button>
     </div>
   </div>
 
