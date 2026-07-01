@@ -109,11 +109,26 @@ function openModal(id) {
   document.getElementById('modalPrice').textContent = fmt(p.precio);
   document.getElementById('modalOriginal').textContent = p.precio_original ? fmt(p.precio_original) : '';
   document.getElementById('modalDesc').textContent = p.descripcion || '';
+  // Banner cliente/no-cliente
+  const pct = getDescuento();
+  const bannerCliente  = document.getElementById('modalClienteBanner');
+  const bannerNoClient = document.getElementById('modalNoClienteBanner');
+  if (currentClient) {
+    bannerCliente.style.display = 'flex';
+    bannerNoClient.style.display = 'none';
+    document.getElementById('modalClienteBannerTxt').textContent =
+      `Hola ${currentClient.nombre}! Tu precio con ${pct}% OFF: ${fmt(Math.round(p.precio*(1-pct/100)))}`;
+  } else {
+    bannerCliente.style.display = 'none';
+    bannerNoClient.style.display = 'flex';
+    const el = document.getElementById('modalNcPct');
+    if (el) el.textContent = globalDescuentoPct;
+  }
   const img = document.getElementById('modalImg');
   const thumbs = document.getElementById('modalThumbs');
   const images = [p.imagen_url, p.imagen_url2, p.imagen_url3].filter(Boolean);
   if (images.length) {
-    img.innerHTML = `<img src="${images[0]}" alt="${p.nombre}" style="width:100%;height:100%;object-fit:cover" />`;
+    img.innerHTML = `<img src="${images[0]}" alt="${p.nombre}" style="width:100%;height:100%;object-fit:contain;background:#f5f5f5" />`;
   } else {
     img.style.background = COLORS[id % COLORS.length];
     img.style.height = '400px';
