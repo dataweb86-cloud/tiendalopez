@@ -37,6 +37,7 @@ CREATE POLICY "Admin config"           ON config_tienda FOR ALL USING (auth.role
 -- Valores por defecto
 INSERT INTO config_tienda (clave, valor) VALUES
   ('descuento_clientes_pct', '10'),
+  ('anuncio_bar', '✦ ENVÍO GRATIS EN COMPRAS MAYORES A $50.000 ✦ NUEVAS COLECCIONES DISPONIBLES ✦ PAGOS EN CUOTAS SIN INTERÉS ✦'),
   ('rifa_activa',   'false'),
   ('rifa_link',     ''),
   ('rifa_titulo',   ''),

@@ -735,12 +735,18 @@ let currentClient = null;
 let globalDescuentoPct = 10;
 
 async function initClientSession() {
-  // Cargar config de descuento
+  // Cargar config de tienda (descuento + anuncio)
   try {
-    const cfg = await fetch(`${SB_URL}/rest/v1/config_tienda?clave=eq.descuento_clientes_pct`,
+    const cfg = await fetch(`${SB_URL}/rest/v1/config_tienda?clave=in.(descuento_clientes_pct,anuncio_bar)`,
       { headers: { apikey: SB_KEY, Authorization: `Bearer ${SB_KEY}` } });
     const rows = await cfg.json();
-    if (rows[0]) globalDescuentoPct = parseInt(rows[0].valor) || 10;
+    rows.forEach(r => {
+      if (r.clave === 'descuento_clientes_pct') globalDescuentoPct = parseInt(r.valor) || 10;
+      if (r.clave === 'anuncio_bar' && r.valor) {
+        const el = document.getElementById('announcementText');
+        if (el) el.textContent = r.valor;
+      }
+    });
   } catch(e) {}
 
   // Restaurar sesión desde localStorage

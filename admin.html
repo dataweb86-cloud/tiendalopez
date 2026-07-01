@@ -734,6 +734,17 @@
         <button class="btn btn-gold btn-sm" onclick="saveConfig()">Guardar cambios</button>
       </div>
 
+      <!-- Anuncio bar -->
+      <div class="form-card">
+        <h3>📢 Barra de anuncio (parte superior de la tienda)</h3>
+        <div class="fg full">
+          <label>Texto del anuncio</label>
+          <input type="text" id="cfgAnuncio" placeholder="✦ ENVÍO GRATIS EN COMPRAS MAYORES A $50.000 ✦ NUEVAS COLECCIONES ✦" style="font-size:.82rem" />
+          <small style="color:#888;font-size:.68rem;margin-top:4px;display:block">Se muestra en la franja dorada al tope de la tienda. Usá ✦ para separar frases. Se actualiza al instante cuando los clientes recargan la página.</small>
+        </div>
+        <button type="button" class="btn btn-gold btn-sm" style="margin-top:10px" onclick="saveAnuncio()">Publicar anuncio</button>
+      </div>
+
       <!-- Descuento clientes -->
       <div class="form-card">
         <h3>💳 Descuento para clientes registrados</h3>
@@ -1109,6 +1120,7 @@ async function guardarDescuentoCliente() {
 async function loadConfig() {
   const rows = await api('/rest/v1/config_tienda?order=clave.asc');
   const get  = (k) => rows.find(r=>r.clave===k)?.valor || '';
+  document.getElementById('cfgAnuncio').value      = get('anuncio_bar');
   document.getElementById('cfgDescuento').value    = get('descuento_clientes_pct') || '10';
   document.getElementById('cfgRifaActiva').value   = get('rifa_activa') || 'false';
   document.getElementById('cfgRifaTitulo').value   = get('rifa_titulo');
@@ -1119,6 +1131,7 @@ async function loadConfig() {
 
 async function saveConfig() {
   const updates = [
+    { clave:'anuncio_bar',            valor: document.getElementById('cfgAnuncio').value.trim() },
     { clave:'descuento_clientes_pct', valor: document.getElementById('cfgDescuento').value || '10' },
     { clave:'rifa_activa',   valor: document.getElementById('cfgRifaActiva').value },
     { clave:'rifa_titulo',   valor: document.getElementById('cfgRifaTitulo').value },
@@ -1131,6 +1144,12 @@ async function saveConfig() {
   }
   toast('Configuración guardada ✓');
   _configDescuento = parseInt(document.getElementById('cfgDescuento').value) || 10;
+}
+
+async function saveAnuncio() {
+  const valor = document.getElementById('cfgAnuncio').value.trim();
+  await api(`\rest\v1\config_tienda?clave=eq.anuncio_bar`, { method:'PATCH', body:JSON.stringify({valor}) });
+  toast('Anuncio publicado ✓ — visible en la tienda al recargar');
 }
 
 /* ══════════════════════════════════════
