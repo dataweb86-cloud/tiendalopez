@@ -124,6 +124,7 @@
     .btn-red{background:#fee2e2;color:var(--red);border:none}.btn-red:hover{background:#fecaca}
     .btn-green{background:#dcfce7;color:#15803d;border:none}.btn-green:hover{background:#bbf7d0}
     .btn-blue{background:#dbeafe;color:var(--blue);border:none}.btn-blue:hover{background:#bfdbfe}
+    .btn-green{background:#16a34a;color:#fff;border:none}.btn-green:hover{background:#15803d}
     .btn-sm{padding:5px 12px;font-size:.6rem}
     .btn-full{width:100%;justify-content:center}
     /* ── ALERTA ── */
@@ -229,10 +230,14 @@
     <div class="nav-item" onclick="showPage('pedidos')"><span class="ico">🛍️</span> Pedidos <span class="nav-badge" id="badgePedidos" style="display:none">0</span></div>
     <div class="nav-item" onclick="showPage('stock-avisos')"><span class="ico">🔔</span> Avisos Stock <span class="nav-badge" id="badgeStock" style="display:none">0</span></div>
     <div class="nav-item" onclick="showPage('ventas')"><span class="ico">💰</span> Ventas</div>
+    <div class="nav-section">Clientes</div>
+    <div class="nav-item" onclick="showPage('clientes')"><span class="ico">👥</span> Clientes <span class="nav-badge" id="badgeClientes" style="display:none">0</span></div>
     <div class="nav-section">Operaciones</div>
     <div class="nav-item" onclick="showPage('horarios')"><span class="ico">🕐</span> Horarios Local</div>
     <div class="nav-item" onclick="showPage('proveedores')"><span class="ico">🏭</span> Proveedores</div>
     <div class="nav-item" onclick="showPage('nuevo-proveedor')"><span class="ico">➕</span> Nuevo Proveedor</div>
+    <div class="nav-section">Sistema</div>
+    <div class="nav-item" onclick="showPage('config')"><span class="ico">⚙️</span> Configuración</div>
   </nav>
 
   <main class="adm-main">
@@ -662,10 +667,11 @@
         <div><h2>Pedidos</h2><p id="pedidoCount">Cargando...</p></div>
         <div style="display:flex;gap:8px">
           <select id="filtroPedidoEstado" style="width:auto;padding:8px 12px;font-size:.72rem" onchange="loadPedidos()">
-            <option value="">Todos</option>
+            <option value="">Todos (sin cobrados)</option>
             <option value="pendiente">Pendientes</option>
             <option value="aceptado">Aceptados</option>
             <option value="rechazado">Rechazados</option>
+            <option value="cobrado">Cobrados</option>
           </select>
           <button class="btn btn-outline btn-sm" onclick="loadPedidos()">↺ Actualizar</button>
         </div>
@@ -700,6 +706,83 @@
       </div>
     </div>
 
+    <!-- ═══════════════ CLIENTES ═══════════════ -->
+    <div class="page" id="page-clientes">
+      <div class="page-header">
+        <div><h2>Clientes Registrados</h2><p id="clientesCount">Cargando...</p></div>
+        <div style="display:flex;gap:8px">
+          <button class="btn btn-gold btn-sm" onclick="abrirEnvioTodos()">📣 Enviar a todos</button>
+          <button class="btn btn-outline btn-sm" onclick="loadClientes()">↺ Actualizar</button>
+        </div>
+      </div>
+
+      <div class="cards-grid" style="grid-template-columns:repeat(3,1fr);margin-bottom:20px">
+        <div class="stat-card gold"><div class="stat-lbl">Total clientes</div><div class="stat-val" id="cTotalClientes">—</div></div>
+        <div class="stat-card green"><div class="stat-lbl">Descuento global activo</div><div class="stat-val" id="cDescuentoGlobal">—<span style="font-size:1rem">%</span></div></div>
+        <div class="stat-card blue"><div class="stat-lbl">Aceptan notificaciones</div><div class="stat-val" id="cConNotif">—</div></div>
+      </div>
+
+      <div class="table-card">
+        <div id="clientesBody"><div class="loading"><div class="spinner"></div>Cargando...</div></div>
+      </div>
+    </div>
+
+    <!-- ═══════════════ CONFIGURACIÓN ═══════════════ -->
+    <div class="page" id="page-config">
+      <div class="page-header">
+        <div><h2>Configuración</h2><p>Parámetros generales de la tienda</p></div>
+        <button class="btn btn-gold btn-sm" onclick="saveConfig()">Guardar cambios</button>
+      </div>
+
+      <!-- Descuento clientes -->
+      <div class="form-card">
+        <h3>💳 Descuento para clientes registrados</h3>
+        <div class="form-grid">
+          <div class="fg">
+            <label>Porcentaje de descuento (%)</label>
+            <input type="number" id="cfgDescuento" min="0" max="100" placeholder="10" />
+            <small style="color:#888;font-size:.68rem">Se aplica automáticamente cuando el cliente ingresa con su teléfono en la tienda.</small>
+          </div>
+          <div class="fg" style="align-self:flex-end">
+            <div style="background:#fffbeb;border:1px solid #fde68a;border-radius:4px;padding:14px;font-size:.78rem">
+              <strong>¿Cómo funciona?</strong><br>
+              El cliente se registra con su teléfono, nombre, mail y dirección. Al ingresar con su número, el carrito muestra los precios con el % de descuento aplicado.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Rifa / Sorteo -->
+      <div class="form-card">
+        <h3>🎟️ Rifa / Sorteo</h3>
+        <div class="form-grid">
+          <div class="fg">
+            <label>¿Rifa activa?</label>
+            <select id="cfgRifaActiva">
+              <option value="false">No — no se muestra en la tienda</option>
+              <option value="true">Sí — visible para los clientes</option>
+            </select>
+          </div>
+          <div class="fg">
+            <label>Título de la rifa</label>
+            <input type="text" id="cfgRifaTitulo" placeholder="Gran Sorteo Verano 2026" />
+          </div>
+          <div class="fg full">
+            <label>Link a la rifa / sorteo</label>
+            <input type="url" id="cfgRifaLink" placeholder="https://..." />
+          </div>
+          <div class="fg full">
+            <label>Descripción</label>
+            <textarea id="cfgRifaDesc" rows="2" placeholder="Premiamos a nuestros clientes con..."></textarea>
+          </div>
+          <div class="fg full">
+            <label>Números disponibles / ganadores</label>
+            <textarea id="cfgRifaNumeros" rows="3" placeholder="Ingresá los números disponibles o el resultado del sorteo..."></textarea>
+          </div>
+        </div>
+      </div>
+    </div>
+
   </main>
 
   <!-- MODAL RESPUESTA PEDIDO -->
@@ -717,6 +800,46 @@
       <div style="display:flex;gap:10px;margin-top:14px;justify-content:flex-end">
         <button class="btn btn-outline btn-sm" onclick="document.getElementById('pedidoRespOverlay').style.display='none'">Cancelar</button>
         <button class="btn btn-gold btn-sm" onclick="enviarRespuestaPedido()">Enviar por WhatsApp</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL ENVIAR PROMO A CLIENTE -->
+  <div style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:400;align-items:center;justify-content:center;padding:20px" id="promoClienteOverlay">
+    <div style="background:#fff;border-radius:6px;max-width:500px;width:100%;padding:28px;position:relative;max-height:90vh;overflow-y:auto">
+      <button onclick="cerrarPromoCliente()" style="position:absolute;top:12px;right:12px;background:#f5f5f5;border:none;width:28px;height:28px;border-radius:50%;cursor:pointer">✕</button>
+      <h3 style="font-family:var(--serif);font-weight:300;font-size:1.3rem;margin-bottom:4px" id="promoClienteTitulo">Enviar mensaje</h3>
+      <p style="font-size:.72rem;color:#888;margin-bottom:14px" id="promoClienteSubtitulo">—</p>
+      <input type="hidden" id="promoClienteId" />
+      <input type="hidden" id="promoClienteTelefono" />
+      <label style="font-size:.62rem;color:#888;letter-spacing:.1em;text-transform:uppercase;font-weight:600;display:block;margin-bottom:4px">Mensaje</label>
+      <textarea id="promoClienteMsg" rows="5" style="width:100%;resize:vertical;font-size:.78rem;border:1px solid #e0d8cc;border-radius:2px;padding:10px;font-family:inherit"></textarea>
+      <p style="font-size:.65rem;color:#aaa;margin-top:6px">💡 Se abrirá WhatsApp con este mensaje pre-cargado.</p>
+      <div style="display:flex;gap:10px;margin-top:14px;justify-content:flex-end">
+        <button class="btn btn-outline btn-sm" onclick="cerrarPromoCliente()">Cancelar</button>
+        <button class="btn btn-gold btn-sm" onclick="enviarPromoCliente()">
+          <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="vertical-align:middle;margin-right:4px"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          Enviar por WhatsApp
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL DESCUENTO INDIVIDUAL CLIENTE -->
+  <div style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:400;align-items:center;justify-content:center;padding:20px" id="descClienteOverlay">
+    <div style="background:#fff;border-radius:6px;max-width:360px;width:100%;padding:28px;position:relative">
+      <button onclick="document.getElementById('descClienteOverlay').style.display='none'" style="position:absolute;top:12px;right:12px;background:#f5f5f5;border:none;width:28px;height:28px;border-radius:50%;cursor:pointer">✕</button>
+      <h3 style="font-family:var(--serif);font-weight:300;font-size:1.3rem;margin-bottom:4px">Descuento individual</h3>
+      <p style="font-size:.72rem;color:#888;margin-bottom:16px" id="descClienteNombre">—</p>
+      <input type="hidden" id="descClienteId" />
+      <div class="fg">
+        <label>% de descuento (dejá vacío para usar el global)</label>
+        <input type="number" id="descClientePct" min="0" max="100" placeholder="Ej: 15" />
+        <small style="color:#aaa;font-size:.66rem;margin-top:4px;display:block">El descuento global actual es <span id="descGlobalActual">10</span>%</small>
+      </div>
+      <div style="display:flex;gap:10px;margin-top:16px;justify-content:flex-end">
+        <button class="btn btn-outline btn-sm" onclick="document.getElementById('descClienteOverlay').style.display='none'">Cancelar</button>
+        <button class="btn btn-gold btn-sm" onclick="guardarDescuentoCliente()">Guardar</button>
       </div>
     </div>
   </div>
@@ -806,6 +929,208 @@ function showPage(id) {
   if(id==='pedidos')      { _pedidosRows=[]; loadPedidos(); }
   if(id==='stock-avisos') { _avisosRows=[]; loadAvisos(); }
   if(id==='horarios')     loadHorarios();
+  if(id==='clientes')     loadClientes();
+  if(id==='config')       loadConfig();
+}
+
+/* ══════════════════════════════════════
+   COBRAR PEDIDO → descontar stock
+══════════════════════════════════════ */
+async function cobrarPedido(id) {
+  if (!confirm('¿Marcar como COBRADO? Se descontará del stock automáticamente.')) return;
+  if (!_pedidosRows.length) _pedidosRows = await api('/rest/v1/pedidos?order=fecha.desc');
+  const p = _pedidosRows.find(x => x.id === id);
+  if (!p) return;
+
+  // 1. Marcar cobrado
+  await api(`/rest/v1/pedidos?id=eq.${id}`, { method:'PATCH', body:JSON.stringify({estado:'cobrado'}) });
+
+  // 2. Registrar en ventas
+  const costo_total = (p.items||[]).reduce((s,i)=>s+(i.costo||0)*(i.cantidad||1),0);
+  await api('/rest/v1/ventas', {
+    method:'POST',
+    body: JSON.stringify({
+      producto_id: (p.items||[])[0]?.producto_id || null,
+      producto: (p.items||[]).map(i=>i.nombre).join(', '),
+      cantidad: (p.items||[]).reduce((s,i)=>s+(i.cantidad||1),0),
+      precio_venta: p.total,
+      costo: costo_total || null,
+      ganancia: costo_total ? p.total - costo_total : null,
+      canal: 'tienda-online',
+      notas: `Pedido #${id} — ${p.nombre}`,
+      fecha: p.fecha || new Date().toISOString(),
+    })
+  }).catch(()=>{});  // ventas es opcional si falla
+
+  // 3. Descontar stock por variante
+  for (const item of (p.items || [])) {
+    const pid = item.producto_id;
+    const qty = item.cantidad || 1;
+    if (pid && item.color && item.talle) {
+      const vRows = await api(`/rest/v1/producto_variantes?producto_id=eq.${pid}&color=eq.${encodeURIComponent(item.color)}&talle=eq.${encodeURIComponent(item.talle)}`);
+      if (vRows.length) {
+        const newStock = Math.max(0, (vRows[0].stock || 0) - qty);
+        await api(`/rest/v1/producto_variantes?id=eq.${vRows[0].id}`, { method:'PATCH', body:JSON.stringify({stock:newStock}) });
+      }
+    } else if (pid) {
+      const pRows = await api(`/rest/v1/productos?id=eq.${pid}`);
+      if (pRows.length) {
+        const newStock = Math.max(0, (pRows[0].stock || 0) - qty);
+        await api(`/rest/v1/productos?id=eq.${pid}`, { method:'PATCH', body:JSON.stringify({stock:newStock}) });
+      }
+    }
+  }
+
+  toast('✓ Pedido cobrado — stock actualizado');
+  _pedidosRows = [];
+  loadPedidos();
+}
+
+/* ══════════════════════════════════════
+   CLIENTES REGISTRADOS
+══════════════════════════════════════ */
+let _configDescuento = 10;
+
+async function loadClientes() {
+  document.getElementById('clientesBody').innerHTML = '<div class="loading"><div class="spinner"></div>Cargando...</div>';
+  const [clientes, cfg] = await Promise.all([
+    api('/rest/v1/clientes?order=fecha_registro.desc'),
+    api('/rest/v1/config_tienda?clave=eq.descuento_clientes_pct').catch(()=>[]),
+  ]);
+  _configDescuento = parseInt(cfg[0]?.valor || '10');
+  document.getElementById('cTotalClientes').textContent   = clientes.length;
+  document.getElementById('cDescuentoGlobal').textContent = _configDescuento;
+  document.getElementById('cConNotif').textContent        = clientes.filter(c=>c.acepta_notif).length;
+  document.getElementById('clientesCount').textContent    = `${clientes.length} cliente${clientes.length!==1?'s':''}`;
+  const badge = document.getElementById('badgeClientes');
+  badge.textContent = clientes.length; badge.style.display = clientes.length ? '' : 'none';
+
+  if (!clientes.length) {
+    document.getElementById('clientesBody').innerHTML = '<p style="text-align:center;padding:40px;color:#aaa">Aún no hay clientes registrados.</p>';
+    return;
+  }
+
+  document.getElementById('clientesBody').innerHTML = `
+    <table>
+      <thead><tr>
+        <th>Cliente</th><th>Teléfono</th><th>Mail</th><th>Ciudad</th>
+        <th>Descuento</th><th>Notif</th><th>Registrado</th><th>Acciones</th>
+      </tr></thead>
+      <tbody>
+        ${clientes.map(c => {
+          const dt = new Date(c.fecha_registro);
+          const desc = c.descuento_pct != null ? `${c.descuento_pct}% (individual)` : `${_configDescuento}% (global)`;
+          const encTel = encodeURIComponent(`+549${c.telefono.replace(/\D/g,'')}`);
+          return `<tr>
+            <td><strong style="font-size:.8rem">${c.nombre} ${c.apellido}</strong></td>
+            <td style="font-size:.78rem">${c.telefono}</td>
+            <td style="font-size:.72rem;color:#888">${c.mail||'—'}</td>
+            <td style="font-size:.72rem">${[c.ciudad,c.provincia].filter(Boolean).join(', ')||'—'}</td>
+            <td><span class="badge b-gold">${desc}</span></td>
+            <td style="text-align:center">${c.acepta_notif?'✅':'❌'}</td>
+            <td style="font-size:.68rem;color:#aaa">${dt.toLocaleDateString('es-AR')}</td>
+            <td>
+              <div style="display:flex;gap:6px;flex-wrap:wrap">
+                <button class="btn btn-gold btn-sm" onclick="abrirPromoCliente(${c.id},'${c.nombre} ${c.apellido}','${c.telefono}')">💬 WA</button>
+                <button class="btn btn-blue btn-sm" onclick="abrirDescuentoCliente(${c.id},'${c.nombre} ${c.apellido}',${c.descuento_pct??'null'})">% Desc</button>
+              </div>
+            </td>
+          </tr>`;
+        }).join('')}
+      </tbody>
+    </table>`;
+}
+
+function abrirPromoCliente(id, nombre, telefono, todos=false) {
+  document.getElementById('promoClienteId').value = id || '';
+  document.getElementById('promoClienteTelefono').value = telefono || '';
+  document.getElementById('promoClienteTitulo').textContent = todos ? 'Enviar a todos los clientes' : `Mensaje para ${nombre}`;
+  document.getElementById('promoClienteSubtitulo').textContent = todos ? 'Se abrirá WhatsApp por cada cliente con notificaciones activas.' : `WhatsApp: ${telefono}`;
+  document.getElementById('promoClienteMsg').value = `Hola ${nombre||''}! 👋 Te escribimos desde *Vanesa Lopez Tienda* con novedades especiales para vos:\n\n✨ [Escribí tu mensaje aquí]\n\nVisitá nuestra tienda: ${location.origin}\n\n¡Gracias por elegirnos! 💛`;
+  document.getElementById('promoClienteOverlay').style.display = 'flex';
+}
+
+async function abrirEnvioTodos() {
+  const clientes = await api('/rest/v1/clientes?acepta_notif=eq.true&activo=eq.true&order=nombre.asc');
+  if (!clientes.length) { toast('No hay clientes con notificaciones activas'); return; }
+  document.getElementById('promoClienteId').value = 'todos';
+  document.getElementById('promoClienteTelefono').value = clientes.map(c=>c.telefono).join(',');
+  document.getElementById('promoClienteTitulo').textContent = `Enviar a ${clientes.length} clientes`;
+  document.getElementById('promoClienteSubtitulo').textContent = 'Se abrirá un WhatsApp por cada cliente (con notificaciones activas).';
+  document.getElementById('promoClienteMsg').value = `Hola [NOMBRE]! 👋 Te escribimos desde *Vanesa Lopez Tienda* con novedades especiales para vos:\n\n✨ [Escribí tu mensaje aquí]\n\nVisitá nuestra tienda: ${location.origin}\n\n¡Gracias por elegirnos! 💛`;
+  document.getElementById('promoClienteOverlay').style.display = 'flex';
+}
+
+function cerrarPromoCliente() {
+  document.getElementById('promoClienteOverlay').style.display = 'none';
+}
+
+async function enviarPromoCliente() {
+  const id   = document.getElementById('promoClienteId').value;
+  const tels = document.getElementById('promoClienteTelefono').value;
+  const msg  = document.getElementById('promoClienteMsg').value;
+  cerrarPromoCliente();
+  if (id === 'todos') {
+    // Abrir WA para cada teléfono con pausa
+    const phones = tels.split(',').filter(Boolean);
+    for (const tel of phones) {
+      const num = tel.replace(/\D/g,'');
+      if (num) window.open(`https://wa.me/549${num}?text=${encodeURIComponent(msg)}`, '_blank');
+      await new Promise(r => setTimeout(r, 800));
+    }
+  } else {
+    const num = tels.replace(/\D/g,'');
+    window.open(`https://wa.me/549${num}?text=${encodeURIComponent(msg)}`, '_blank');
+  }
+  toast('WhatsApp abierto ✓');
+}
+
+function abrirDescuentoCliente(id, nombre, descActual) {
+  document.getElementById('descClienteId').value = id;
+  document.getElementById('descClienteNombre').textContent = nombre;
+  document.getElementById('descClientePct').value = descActual != null ? descActual : '';
+  document.getElementById('descGlobalActual').textContent = _configDescuento;
+  document.getElementById('descClienteOverlay').style.display = 'flex';
+}
+
+async function guardarDescuentoCliente() {
+  const id  = document.getElementById('descClienteId').value;
+  const pct = document.getElementById('descClientePct').value;
+  const val = pct === '' ? null : parseInt(pct);
+  await api(`/rest/v1/clientes?id=eq.${id}`, { method:'PATCH', body:JSON.stringify({descuento_pct:val}) });
+  document.getElementById('descClienteOverlay').style.display = 'none';
+  toast('Descuento actualizado ✓');
+  loadClientes();
+}
+
+/* ══════════════════════════════════════
+   CONFIGURACIÓN TIENDA
+══════════════════════════════════════ */
+async function loadConfig() {
+  const rows = await api('/rest/v1/config_tienda?order=clave.asc');
+  const get  = (k) => rows.find(r=>r.clave===k)?.valor || '';
+  document.getElementById('cfgDescuento').value    = get('descuento_clientes_pct') || '10';
+  document.getElementById('cfgRifaActiva').value   = get('rifa_activa') || 'false';
+  document.getElementById('cfgRifaTitulo').value   = get('rifa_titulo');
+  document.getElementById('cfgRifaLink').value     = get('rifa_link');
+  document.getElementById('cfgRifaDesc').value     = get('rifa_descripcion');
+  document.getElementById('cfgRifaNumeros').value  = get('rifa_numeros');
+}
+
+async function saveConfig() {
+  const updates = [
+    { clave:'descuento_clientes_pct', valor: document.getElementById('cfgDescuento').value || '10' },
+    { clave:'rifa_activa',   valor: document.getElementById('cfgRifaActiva').value },
+    { clave:'rifa_titulo',   valor: document.getElementById('cfgRifaTitulo').value },
+    { clave:'rifa_link',     valor: document.getElementById('cfgRifaLink').value },
+    { clave:'rifa_descripcion', valor: document.getElementById('cfgRifaDesc').value },
+    { clave:'rifa_numeros',  valor: document.getElementById('cfgRifaNumeros').value },
+  ];
+  for (const u of updates) {
+    await api(`/rest/v1/config_tienda?clave=eq.${u.clave}`, { method:'PATCH', body:JSON.stringify({valor:u.valor}) });
+  }
+  toast('Configuración guardada ✓');
+  _configDescuento = parseInt(document.getElementById('cfgDescuento').value) || 10;
 }
 
 /* ══════════════════════════════════════
@@ -1575,7 +1900,8 @@ const fmt2=(s)=>s||'—';
 
 async function loadPedidos() {
   const est = document.getElementById('filtroPedidoEstado').value;
-  const q = est ? `&estado=eq.${est}` : '';
+  // Por defecto muestra todo EXCEPTO cobrados; solo muestra cobrados si se filtra explícitamente
+  const q = est ? `&estado=eq.${est}` : '&estado=neq.cobrado';
   const rows = await api(`/rest/v1/pedidos?order=fecha.desc${q}`);
   const el = document.getElementById('pedidosBody');
   const pend = rows.filter(r=>r.estado==='pendiente').length;
@@ -1609,7 +1935,10 @@ async function loadPedidos() {
         ${p.estado==='pendiente'?`
           <button class="btn btn-outline btn-sm" onclick="abrirRespPedido(${p.id},'rechazado')">Rechazar</button>
           <button class="btn btn-gold btn-sm" onclick="abrirRespPedido(${p.id},'aceptado')">Aceptar</button>
-        `:p.estado==='aceptado'?`<button class="btn btn-outline btn-sm" onclick="abrirRespPedido(${p.id},'mensaje')">Enviar mensaje</button>`:''}
+        `:p.estado==='aceptado'?`
+          <button class="btn btn-outline btn-sm" onclick="abrirRespPedido(${p.id},'mensaje')">Mensaje</button>
+          <button class="btn btn-green btn-sm" onclick="cobrarPedido(${p.id})">✓ Cobrar — descontar stock</button>
+        `:p.estado==='cobrado'?`<span class="badge b-green">✓ Cobrado</span>`:''}
       </div>
     </div>`;
   }).join('');

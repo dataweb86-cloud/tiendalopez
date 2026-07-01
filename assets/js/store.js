@@ -239,21 +239,34 @@ function addItemToCart(p, size, color='') {
   const key = `${p.id}-${color}-${size}`;
   const existing = cart.find(i => i.key === key);
   if (existing) { existing.qty++; }
-  else { cart.push({ key, ...p, size, color, qty: 1 }); }
+  else { cart.push({ key, producto_id: p.id, ...p, size, color, qty: 1 }); }
   updateCartUI();
   showToast(`${p.nombre} agregado al carrito`);
 }
 
 function updateCartUI() {
-  const count = cart.reduce((s, i) => s + i.qty, 0);
-  const total = cart.reduce((s, i) => s + i.precio * i.qty, 0);
+  const count  = cart.reduce((s, i) => s + i.qty, 0);
+  const total  = cart.reduce((s, i) => s + i.precio * i.qty, 0);
+  const pct    = getDescuento();
+  const totalDesc = pct > 0 ? Math.round(total * (1 - pct/100)) : total;
   document.querySelector('.cart-count').textContent = count;
-  document.getElementById('cartTotal').textContent = fmt(total);
+  const totalEl = document.getElementById('cartTotal');
+  if (pct > 0 && currentClient) {
+    totalEl.innerHTML = `<span style="text-decoration:line-through;color:#aaa;font-size:.8rem">${fmt(total)}</span> <span style="color:#16a34a">${fmt(totalDesc)}</span> <span style="background:#16a34a;color:#fff;border-radius:4px;font-size:.7rem;padding:1px 6px">${pct}% OFF</span>`;
+  } else {
+    totalEl.textContent = fmt(total);
+  }
   const el = document.getElementById('cartItems');
   if (cart.length === 0) {
     el.innerHTML = '<p class="cart-empty">Tu carrito está vacío.</p>';
   } else {
-    el.innerHTML = cart.map((i, idx) => `
+    el.innerHTML = cart.map((i, idx) => {
+      const precioItem  = i.precio * i.qty;
+      const precioDesc  = pct > 0 && currentClient ? Math.round(precioItem * (1-pct/100)) : precioItem;
+      const precioHtml  = pct > 0 && currentClient
+        ? `<span style="text-decoration:line-through;color:#aaa;font-size:.78rem">${fmt(precioItem)}</span> <span style="color:#16a34a;font-weight:600">${fmt(precioDesc)}</span>`
+        : `<span style="font-size:.9rem;font-weight:600">${fmt(precioItem)}</span>`;
+      return `
       <div style="display:flex;gap:12px;padding:16px 0;border-bottom:1px solid #eee">
         <div style="width:64px;height:80px;background:${COLORS[idx % COLORS.length]};border-radius:2px;flex-shrink:0;overflow:hidden">
           ${i.imagen_url ? `<img src="${i.imagen_url}" style="width:100%;height:100%;object-fit:cover">` : ''}
@@ -267,11 +280,11 @@ function updateCartUI() {
               <span style="font-size:.85rem">${i.qty}</span>
               <button onclick="changeQty('${i.key}',1)" style="width:24px;height:24px;border:1px solid #ddd;border-radius:2px;font-size:.9rem;cursor:pointer">+</button>
             </div>
-            <span style="font-size:.9rem;font-weight:600">${fmt(i.precio * i.qty)}</span>
+            ${precioHtml}
           </div>
         </div>
-      </div>
-    `).join('');
+      </div>`;
+    }).join('');
   }
 }
 
@@ -300,6 +313,14 @@ document.querySelector('.cart-btn').addEventListener('click', openCart);
 /* ─── CHECKOUT ──────────────────────────────────── */
 function abrirCheckout() {
   if (!cart.length) { showToast('Tu carrito está vacío'); return; }
+  if (!currentClient) {
+    window._pendingCheckout = true;
+    document.getElementById('noRegistradoOverlay').classList.add('active');
+    return;
+  }
+  _abrirCheckoutReal();
+}
+function _abrirCheckoutReal() {
   document.getElementById('checkoutOverlay').classList.add('active');
 }
 
@@ -396,9 +417,11 @@ async function submitPedido(e) {
   const contacto = document.getElementById('pContactoCliente').value.trim();
   const horario= document.getElementById('pHorario').value;
   const dir    = document.getElementById('pDireccion').value.trim();
-  const total  = cart.reduce((s,i)=>s+i.precio*i.qty,0);
+  const totalOriginal = cart.reduce((s,i)=>s+i.precio*i.qty,0);
+  const pct    = getDescuento();
+  const totalConDesc = pct > 0 ? Math.round(totalOriginal*(1-pct/100)) : totalOriginal;
   const envio  = tipo==='envio' ? 3000 : 0;
-  const items  = cart.map(i=>({nombre:i.nombre,color:i.color||'',talle:i.size||'',cantidad:i.qty,precio:i.precio}));
+  const items  = cart.map(i=>({nombre:i.nombre,color:i.color||'',talle:i.size||'',cantidad:i.qty,precio:i.precio,producto_id:i.producto_id||null}));
   const detalle= cart.map(i=>`• ${i.nombre}${i.color?` (${i.color})`:''}${i.size?` talle ${i.size}`:''} x${i.qty} — ${fmt(i.precio*i.qty)}`).join('\n');
 
   // guardar pedido en Supabase
@@ -406,8 +429,13 @@ async function submitPedido(e) {
     await fetch(`${SB_URL}/rest/v1/pedidos`,{
       method:'POST',
       headers:{apikey:SB_KEY,Authorization:`Bearer ${SB_KEY}`,'Content-Type':'application/json'},
-      body:JSON.stringify({items,total:total+envio,metodo_pago:metodo,tipo_entrega:tipo,
-        nombre,contacto,tipo_contacto:tipoC,horario,direccion:dir||null,costo_envio:envio})
+      body:JSON.stringify({
+        items, total:totalConDesc+envio, metodo_pago:metodo, tipo_entrega:tipo,
+        nombre, contacto, tipo_contacto:tipoC, horario, direccion:dir||null, costo_envio:envio,
+        cliente_id: currentClient?.id || null,
+        descuento_aplicado: pct,
+        total_original: totalOriginal+envio
+      })
     });
   } catch(err){ console.warn('Error guardando pedido',err); }
 
@@ -416,9 +444,12 @@ async function submitPedido(e) {
   const entregaTxt = tipo==='retiro' ? `🏪 Retiro en el local a las *${horario}*`
     : `🚚 Envío a domicilio a las *${horario}*${dir?` — ${dir}`:''} (+$3.000)`;
   let msg = `🛍️ *Pedido — Vanesa Lopez Tienda*\n\n${detalle}\n\n`;
-  msg += `*Subtotal:* ${fmt(total)}${envio?`\n*Envío:* ${fmt(envio)}`:''}`;
-  msg += `\n*Total: ${fmt(total+envio)}*\n💳 *Pago:* ${metodoTxt}\n${entregaTxt}\n`;
+  msg += `*Subtotal:* ${fmt(totalOriginal)}`;
+  if (pct > 0 && currentClient) msg += `\n🎁 *Descuento ${pct}%:* −${fmt(totalOriginal - totalConDesc)}`;
+  if (envio) msg += `\n🚚 *Envío:* ${fmt(envio)}`;
+  msg += `\n*Total: ${fmt(totalConDesc+envio)}*\n💳 *Pago:* ${metodoTxt}\n${entregaTxt}\n`;
   msg += `\n👤 *Nombre:* ${nombre}\n📱 *Contacto:* ${contacto}`;
+  if (currentClient) msg += `\n🌟 *Cliente registrado* — ${currentClient.nombre} ${currentClient.apellido}`;
   if (metodo==='mp') msg += `\n\nEnvío el comprobante de la transferencia.`;
 
   window.open(`https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(msg)}`,'_blank');
@@ -681,6 +712,144 @@ async function enviarConsulta(e) {
 }
 
 /* ─── INIT ──────────────────────────────────────── */
+/* ─── SISTEMA DE CLIENTES ───────────────────────── */
+let currentClient = null;
+let globalDescuentoPct = 10;
+
+async function initClientSession() {
+  // Cargar config de descuento
+  try {
+    const cfg = await fetch(`${SB_URL}/rest/v1/config_tienda?clave=eq.descuento_clientes_pct`,
+      { headers: { apikey: SB_KEY, Authorization: `Bearer ${SB_KEY}` } });
+    const rows = await cfg.json();
+    if (rows[0]) globalDescuentoPct = parseInt(rows[0].valor) || 10;
+  } catch(e) {}
+
+  // Restaurar sesión desde localStorage
+  const tel = localStorage.getItem('vl_cliente_tel');
+  if (tel) {
+    try {
+      const res = await fetch(`${SB_URL}/rest/v1/clientes?telefono=eq.${encodeURIComponent(tel)}&activo=eq.true`,
+        { headers: { apikey: SB_KEY, Authorization: `Bearer ${SB_KEY}` } });
+      const rows = await res.json();
+      if (rows[0]) { currentClient = rows[0]; mostrarBarraCliente(); }
+    } catch(e) {}
+  }
+
+  // Actualizar % en popup no-registrado
+  document.querySelectorAll('#noRegDescPct,#noRegDescPct2').forEach(el => el.textContent = globalDescuentoPct);
+}
+
+function getDescuento() {
+  if (!currentClient) return 0;
+  return currentClient.descuento_pct != null ? currentClient.descuento_pct : globalDescuentoPct;
+}
+
+function aplicarDescuento(precio) {
+  const pct = getDescuento();
+  return pct > 0 ? Math.round(precio * (1 - pct / 100)) : precio;
+}
+
+function mostrarBarraCliente() {
+  if (!currentClient) return;
+  const bar  = document.getElementById('clienteBar');
+  const msg  = document.getElementById('clienteBarMsg');
+  const desc = document.getElementById('clienteBarDesc');
+  const pct  = getDescuento();
+  msg.textContent  = `✦ Hola, ${currentClient.nombre}! Gracias por seguir eligiendo nuestra tienda. 💛`;
+  desc.textContent = pct > 0 ? `${pct}% OFF aplicado` : '';
+  if (bar) { bar.style.display = 'flex'; }
+  const btn = document.getElementById('miCuentaBtn');
+  if (btn) btn.style.color = 'var(--gold)';
+  updateCartUI();
+}
+
+function logoutCliente() {
+  currentClient = null;
+  localStorage.removeItem('vl_cliente_tel');
+  const bar = document.getElementById('clienteBar');
+  if (bar) bar.style.display = 'none';
+  const btn = document.getElementById('miCuentaBtn');
+  if (btn) btn.style.color = '';
+  updateCartUI();
+  showToast('Sesión cerrada');
+}
+
+// ── Login ──
+function abrirLoginCliente() {
+  document.getElementById('loginClienteOverlay').classList.add('active');
+  switchToLogin();
+}
+function cerrarLoginCliente() {
+  document.getElementById('loginClienteOverlay').classList.remove('active');
+}
+function switchToLogin()   { document.getElementById('loginForm').style.display=''; document.getElementById('registroForm').style.display='none'; }
+function switchToRegistro(){ document.getElementById('loginForm').style.display='none'; document.getElementById('registroForm').style.display=''; }
+
+async function loginCliente() {
+  const tel = document.getElementById('loginTelefono').value.trim();
+  if (!tel) { showToast('Ingresá tu número'); return; }
+  try {
+    const res = await fetch(`${SB_URL}/rest/v1/clientes?telefono=eq.${encodeURIComponent(tel)}&activo=eq.true`,
+      { headers: { apikey: SB_KEY, Authorization: `Bearer ${SB_KEY}` } });
+    const rows = await res.json();
+    if (!rows[0]) { showToast('No encontramos una cuenta con ese teléfono. ¿Querés registrarte?'); switchToRegistro(); return; }
+    currentClient = rows[0];
+    localStorage.setItem('vl_cliente_tel', tel);
+    cerrarLoginCliente();
+    cerrarNoRegistrado();
+    mostrarBarraCliente();
+    showToast(`Bienvenida, ${currentClient.nombre}! 💛`);
+    // Si había un checkout pendiente, continuarlo
+    if (window._pendingCheckout) { window._pendingCheckout = false; abrirCheckout(); }
+  } catch(e) { showToast('Error al ingresar. Intentá de nuevo.'); }
+}
+
+// ── Registro ──
+async function registrarCliente(e) {
+  e.preventDefault();
+  const btn = document.getElementById('regSubmitBtn');
+  btn.textContent = 'Registrando...'; btn.disabled = true;
+  const data = {
+    nombre:    document.getElementById('regNombre').value.trim(),
+    apellido:  document.getElementById('regApellido').value.trim(),
+    telefono:  document.getElementById('regTelefono').value.trim(),
+    mail:      document.getElementById('regMail').value.trim(),
+    provincia: document.getElementById('regProvincia').value.trim(),
+    ciudad:    document.getElementById('regCiudad').value.trim(),
+    direccion: document.getElementById('regDireccion').value.trim(),
+    acepta_notif: document.getElementById('regNotif').checked,
+  };
+  try {
+    const res = await fetch(`${SB_URL}/rest/v1/clientes`, {
+      method: 'POST',
+      headers: { apikey: SB_KEY, Authorization: `Bearer ${SB_KEY}`, 'Content-Type': 'application/json', Prefer: 'return=representation' },
+      body: JSON.stringify(data)
+    });
+    if (!res.ok) {
+      const err = await res.json();
+      if (err.code === '23505') { showToast('Ya existe una cuenta con ese teléfono. Ingresá.'); switchToLogin(); }
+      else showToast('Error al registrarse: ' + (err.message || 'Intentá de nuevo'));
+      return;
+    }
+    const rows = await res.json();
+    currentClient = rows[0] || { ...data };
+    localStorage.setItem('vl_cliente_tel', data.telefono);
+    cerrarLoginCliente();
+    cerrarNoRegistrado();
+    mostrarBarraCliente();
+    mostrarSuccess('¡Bienvenida! 🎉', `Hola ${data.nombre}! Tu cuenta fue creada. Ahora tenés un ${getDescuento()}% de descuento en todos tus pedidos. ¡Disfrutá tu compra!`);
+    if (window._pendingCheckout) { window._pendingCheckout = false; setTimeout(() => abrirCheckout(), 1800); }
+  } catch(e) { showToast('Error al registrarse. Intentá de nuevo.'); }
+  finally { btn.textContent = 'Registrarme y obtener descuento'; btn.disabled = false; }
+}
+
+// ── Popup no registrado ──
+function cerrarNoRegistrado() { document.getElementById('noRegistradoOverlay').classList.remove('active'); }
+function abrirRegistroDesdePopup() { cerrarNoRegistrado(); abrirLoginCliente(); switchToRegistro(); }
+function abrirLoginDesdePopup()    { cerrarNoRegistrado(); abrirLoginCliente(); switchToLogin(); }
+function continuarSinDescuento()   { cerrarNoRegistrado(); _abrirCheckoutReal(); }
+
 /* ─── FILTROS CATÁLOGO ──────────────────────────── */
 function getFilterChecked(filterName) {
   return [...document.querySelectorAll(`[data-filter="${filterName}"]:checked`)].map(cb => cb.value);
@@ -847,6 +1016,7 @@ function renderCatalog() {
 async function init() {
   ['catalogoGrid','nuevosGrid','promocionesGrid','ofertasGrid','liquidacionGrid'].forEach(showSkeletons);
 
+  await initClientSession();
   allProducts = await fetchProducts();
 
   buildFilterOptions(allProducts);

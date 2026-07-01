@@ -37,6 +37,9 @@
         <a href="#contacto">Contacto</a>
       </nav>
       <div class="header-actions">
+        <button class="icon-btn" id="miCuentaBtn" aria-label="Mi cuenta" title="Mi cuenta / Registrarme" onclick="abrirLoginCliente()">
+          <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><circle cx="9" cy="7" r="4"/><path d="M3 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/><path d="M21 21v-2a4 4 0 0 0-3-3.87"/></svg>
+        </button>
         <button class="icon-btn" aria-label="Buscar">
           <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.35-4.35"/></svg>
         </button>
@@ -634,6 +637,92 @@
         <p style="font-size:.7rem;color:#aaa" id="pHorarioInfo"></p>
         <button type="submit" class="btn btn-gold full">Confirmar pedido</button>
       </form>
+    </div>
+  </div>
+
+  <!-- BARRA DE BIENVENIDA CLIENTE (oculta por defecto) -->
+  <div id="clienteBar" style="display:none;background:var(--black);color:var(--gold);padding:10px 20px;display:none;align-items:center;justify-content:space-between;gap:12px;font-size:.72rem;letter-spacing:.06em;position:sticky;top:72px;z-index:99;border-bottom:1px solid rgba(201,168,76,.2)">
+    <span id="clienteBarMsg">✦ Hola! Bienvenida a tu tienda.</span>
+    <div style="display:flex;gap:10px;align-items:center">
+      <span id="clienteBarDesc" style="background:rgba(201,168,76,.15);padding:3px 10px;border-radius:100px;font-weight:600"></span>
+      <button onclick="logoutCliente()" style="background:none;border:1px solid rgba(201,168,76,.3);color:rgba(201,168,76,.7);padding:4px 10px;border-radius:100px;font-size:.62rem;cursor:pointer;letter-spacing:.08em">Cerrar sesión</button>
+    </div>
+  </div>
+
+  <!-- MODAL LOGIN CLIENTE -->
+  <div class="consulta-overlay" id="loginClienteOverlay" onclick="if(event.target===this)cerrarLoginCliente()">
+    <div class="checkout-box" style="max-width:400px">
+      <button onclick="cerrarLoginCliente()" style="position:absolute;top:14px;right:14px;background:#f5f5f5;border:none;width:32px;height:32px;border-radius:50%;cursor:pointer;font-size:.85rem">✕</button>
+      <h2 class="checkout-title">Mi cuenta</h2>
+      <p class="checkout-sub">Ingresá con tu número de teléfono para acceder a tu descuento.</p>
+
+      <!-- Login -->
+      <div id="loginForm">
+        <label style="font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;font-weight:600;color:#888;display:block;margin-bottom:5px">Número de teléfono</label>
+        <input type="tel" id="loginTelefono" placeholder="Ej: 2954589000" style="width:100%;padding:12px;border:1px solid #e0d8cc;border-radius:2px;font-size:.85rem;margin-bottom:12px" />
+        <button onclick="loginCliente()" class="btn btn-gold" style="width:100%;padding:14px">Ingresar</button>
+        <p style="text-align:center;margin-top:14px;font-size:.72rem;color:#888">¿No estás registrada? <button onclick="switchToRegistro()" style="background:none;border:none;color:var(--gold-dark);cursor:pointer;font-size:.72rem;text-decoration:underline">Registrarme gratis</button></p>
+      </div>
+
+      <!-- Registro -->
+      <div id="registroForm" style="display:none">
+        <form onsubmit="registrarCliente(event)">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
+            <div>
+              <label style="font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;font-weight:600;color:#888;display:block;margin-bottom:4px">Nombre *</label>
+              <input type="text" id="regNombre" required placeholder="Tu nombre" style="width:100%;padding:10px;border:1px solid #e0d8cc;border-radius:2px;font-size:.8rem" />
+            </div>
+            <div>
+              <label style="font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;font-weight:600;color:#888;display:block;margin-bottom:4px">Apellido *</label>
+              <input type="text" id="regApellido" required placeholder="Tu apellido" style="width:100%;padding:10px;border:1px solid #e0d8cc;border-radius:2px;font-size:.8rem" />
+            </div>
+          </div>
+          <div style="margin-bottom:10px">
+            <label style="font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;font-weight:600;color:#888;display:block;margin-bottom:4px">Teléfono / WhatsApp *</label>
+            <input type="tel" id="regTelefono" required placeholder="Ej: 2954589000" style="width:100%;padding:10px;border:1px solid #e0d8cc;border-radius:2px;font-size:.8rem" />
+          </div>
+          <div style="margin-bottom:10px">
+            <label style="font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;font-weight:600;color:#888;display:block;margin-bottom:4px">Email *</label>
+            <input type="email" id="regMail" required placeholder="tu@mail.com" style="width:100%;padding:10px;border:1px solid #e0d8cc;border-radius:2px;font-size:.8rem" />
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
+            <div>
+              <label style="font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;font-weight:600;color:#888;display:block;margin-bottom:4px">Provincia *</label>
+              <input type="text" id="regProvincia" required placeholder="Buenos Aires" style="width:100%;padding:10px;border:1px solid #e0d8cc;border-radius:2px;font-size:.8rem" />
+            </div>
+            <div>
+              <label style="font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;font-weight:600;color:#888;display:block;margin-bottom:4px">Ciudad *</label>
+              <input type="text" id="regCiudad" required placeholder="Santa Rosa" style="width:100%;padding:10px;border:1px solid #e0d8cc;border-radius:2px;font-size:.8rem" />
+            </div>
+          </div>
+          <div style="margin-bottom:12px">
+            <label style="font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;font-weight:600;color:#888;display:block;margin-bottom:4px">Dirección *</label>
+            <input type="text" id="regDireccion" required placeholder="Calle, número, piso..." style="width:100%;padding:10px;border:1px solid #e0d8cc;border-radius:2px;font-size:.8rem" />
+          </div>
+          <label style="display:flex;align-items:flex-start;gap:8px;font-size:.72rem;color:#555;margin-bottom:14px;cursor:pointer">
+            <input type="checkbox" id="regNotif" checked style="margin-top:2px;flex-shrink:0" />
+            Acepto recibir novedades, ofertas y notificaciones de Vanesa Lopez Tienda por WhatsApp o email.
+          </label>
+          <button type="submit" class="btn btn-gold" style="width:100%;padding:14px" id="regSubmitBtn">Registrarme y obtener descuento</button>
+          <p style="text-align:center;margin-top:12px;font-size:.72rem;color:#888">¿Ya tenés cuenta? <button type="button" onclick="switchToLogin()" style="background:none;border:none;color:var(--gold-dark);cursor:pointer;font-size:.72rem;text-decoration:underline">Ingresar</button></p>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- POPUP NO REGISTRADO (al ir al checkout) -->
+  <div class="consulta-overlay" id="noRegistradoOverlay" onclick="if(event.target===this)cerrarNoRegistrado()">
+    <div class="checkout-box" style="max-width:420px;text-align:center">
+      <button onclick="cerrarNoRegistrado()" style="position:absolute;top:14px;right:14px;background:#f5f5f5;border:none;width:32px;height:32px;border-radius:50%;cursor:pointer;font-size:.85rem">✕</button>
+      <div style="width:64px;height:64px;background:var(--gold);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;font-size:1.8rem">🎁</div>
+      <h2 style="font-family:var(--font-serif);font-weight:300;font-size:1.5rem;margin-bottom:8px">¡Obtené tu descuento!</h2>
+      <p style="font-size:.82rem;color:#666;margin-bottom:6px">Registrarte es <strong>gratis</strong> y te da <strong id="noRegDescPct">10</strong>% de descuento en esta compra y en todas las futuras.</p>
+      <p style="font-size:.72rem;color:#aaa;margin-bottom:22px">También podés ingresar si ya tenés cuenta.</p>
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <button onclick="abrirRegistroDesdePopup()" class="btn btn-gold" style="padding:14px;font-size:.78rem">🎁 Registrarme y obtener <span id="noRegDescPct2">10</span>% OFF</button>
+        <button onclick="abrirLoginDesdePopup()" style="background:none;border:1px solid #ddd;padding:12px;border-radius:2px;font-size:.75rem;cursor:pointer">Ya tengo cuenta — ingresar con mi teléfono</button>
+        <button onclick="continuarSinDescuento()" style="background:none;border:none;font-size:.7rem;color:#aaa;cursor:pointer;padding:6px">Continuar sin descuento</button>
+      </div>
     </div>
   </div>
 
