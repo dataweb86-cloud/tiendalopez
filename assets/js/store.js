@@ -473,10 +473,43 @@ async function submitPedido(e) {
   window.open(`https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(msg)}`,'_blank');
   cerrarPedidoForm(); closeCart();
   cart=[]; updateCartUI();
+
+  if (tipo === 'retiro') {
+    abrirRetiroPopup(nombre, horario);
+  } else {
+    mostrarSuccess('¡Pedido confirmado!',
+      `Genial ${nombre}! Te enviamos el pedido a las ${horario}. Te confirmamos por WhatsApp.`);
+  }
+}
+
+/* ─── POPUP RETIRO ──────────────────────────────── */
+let _retiroHorario = '';
+let _retiroNombre  = '';
+
+function abrirRetiroPopup(nombre, horario) {
+  _retiroNombre  = nombre;
+  _retiroHorario = horario;
+  const el = document.getElementById('retiroHorarioTxt');
+  if (el) el.textContent = horario ? `Te esperamos el ${horario}` : 'Te esperamos en el local';
+  const ov = document.getElementById('retiroOverlay');
+  if (ov) { ov.style.display = 'flex'; document.body.style.overflow = 'hidden'; }
+}
+
+function cerrarRetiroPopup() {
+  const ov = document.getElementById('retiroOverlay');
+  if (ov) { ov.style.display = 'none'; document.body.style.overflow = ''; }
   mostrarSuccess('¡Pedido confirmado!',
-    tipo==='retiro'
-      ? `Genial ${nombre}! Te esperamos en el local a las ${horario}. Te confirmamos por WhatsApp.`
-      : `Genial ${nombre}! Te enviamos el pedido a las ${horario}. Te confirmamos por WhatsApp.`);
+    `Genial ${_retiroNombre}! Te esperamos a las ${_retiroHorario}. Cualquier duda te avisamos por WhatsApp.`);
+}
+
+function iniciarViajeLocal() {
+  const dest = encodeURIComponent('Pedro Zanni 1043, Barrio Aeropuerto, Santa Rosa, La Pampa, Argentina');
+  window.open(`https://www.google.com/maps/dir/?api=1&destination=${dest}&travelmode=driving`, '_blank');
+}
+
+function avisarQueVoy() {
+  const msg = `Hola! Soy ${_retiroNombre}, ya estoy yendo a buscar mi pedido. Llego aproximadamente a las ${_retiroHorario}. ¡Hasta ahora!`;
+  window.open(`https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(msg)}`, '_blank');
 }
 
 /* ─── MODAL ÉXITO ───────────────────────────────── */
