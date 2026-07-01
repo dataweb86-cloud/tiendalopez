@@ -1148,7 +1148,7 @@ async function saveConfig() {
 
 async function saveAnuncio() {
   const valor = document.getElementById('cfgAnuncio').value.trim();
-  await api(`\rest\v1\config_tienda?clave=eq.anuncio_bar`, { method:'PATCH', body:JSON.stringify({valor}) });
+  await api(`/rest/v1/config_tienda?clave=eq.anuncio_bar`, { method:'PATCH', body:JSON.stringify({valor}) });
   toast('Anuncio publicado ✓ — visible en la tienda al recargar');
 }
 
