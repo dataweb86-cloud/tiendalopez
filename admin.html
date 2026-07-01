@@ -1882,6 +1882,10 @@ function renderVariantesGrid() {
     return;
   }
   if (!variantesData.length) { wrap.innerHTML=''; return; }
+  // Inicializar talles nuevos a 0 para que getVariantes() los incluya
+  variantesData.forEach(v => {
+    talles.forEach(t => { if (!(t in v.talles)) v.talles[t] = 0; });
+  });
   wrap.innerHTML = variantesData.map((v,idx)=>`
     <div class="variante-row">
       <input class="variante-color-input" type="text" placeholder="Ej: Rojo, Negro, Azul"
