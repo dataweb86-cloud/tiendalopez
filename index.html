@@ -237,15 +237,13 @@
           <span class="modal-original" id="modalOriginal"></span>
         </div>
         <p class="modal-desc" id="modalDesc"></p>
-        <div class="size-picker">
+        <div class="color-picker" id="modalColorPicker" style="display:none">
+          <p>Color:</p>
+          <div class="colors" id="modalColors"></div>
+        </div>
+        <div class="size-picker" id="modalSizePicker">
           <p>Talle:</p>
-          <div class="sizes">
-            <button class="size-btn active">XS</button>
-            <button class="size-btn">S</button>
-            <button class="size-btn">M</button>
-            <button class="size-btn">L</button>
-            <button class="size-btn">XL</button>
-          </div>
+          <div class="sizes" id="modalSizes"></div>
         </div>
         <div class="modal-actions">
           <button class="btn btn-gold full" onclick="addToCart()">Agregar al carrito</button>
@@ -370,6 +368,88 @@
           </button>
         </form>
       </div>
+    </div>
+  </div>
+
+  <!-- MODAL SIN STOCK -->
+  <div class="consulta-overlay" id="sinStockOverlay" onclick="if(event.target===this)cerrarSinStock()">
+    <div class="checkout-box">
+      <button class="modal-close" onclick="cerrarSinStock()">✕</button>
+      <div class="success-icon" style="background:#c9a84c;margin:0 auto 16px">!</div>
+      <h3 class="checkout-title" style="text-align:center">Por el momento no tenemos stock</h3>
+      <p style="font-size:.8rem;color:#888;text-align:center;margin-bottom:20px" id="sinStockMsg">Este producto en el color y talle que elegiste no está disponible ahora, pero ya le avisamos a Vanesa. Dejanos tu contacto y te avisamos cuando llegue.</p>
+      <form id="sinStockForm" onsubmit="submitSolicitudStock(event)">
+        <input type="hidden" id="ssProductoId" />
+        <input type="hidden" id="ssColor" />
+        <input type="hidden" id="ssTalle" />
+        <div style="margin-bottom:10px">
+          <label style="font-size:.72rem;color:#888;display:block;margin-bottom:4px">Tu nombre</label>
+          <input type="text" id="ssNombre" placeholder="Nombre" required style="width:100%;padding:10px;border:1px solid #ddd;border-radius:3px;font-size:.82rem" />
+        </div>
+        <div style="margin-bottom:10px">
+          <label style="font-size:.72rem;color:#888;display:block;margin-bottom:4px">¿Cómo preferís que te avisemos?</label>
+          <select id="ssTipo" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:3px;font-size:.82rem;margin-bottom:6px">
+            <option value="whatsapp">WhatsApp</option>
+            <option value="email">Email</option>
+          </select>
+          <input type="text" id="ssContacto" placeholder="Teléfono o email" required style="width:100%;padding:10px;border:1px solid #ddd;border-radius:3px;font-size:.82rem" />
+        </div>
+        <button type="submit" class="btn btn-gold full">Avisame cuando haya stock</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL ENTREGA / RETIRO -->
+  <div class="consulta-overlay" id="entregaOverlay" onclick="if(event.target===this)cerrarEntrega()">
+    <div class="checkout-box">
+      <button class="modal-close" onclick="cerrarEntrega()">✕</button>
+      <h3 class="checkout-title">¿Cómo recibís tu pedido?</h3>
+      <p class="checkout-sub">Elegí la forma de entrega.</p>
+      <div class="checkout-option" style="cursor:pointer" onclick="elegirEntrega('retiro')">
+        <strong style="font-size:.9rem">🏪 Retiro en el local</strong>
+        <p style="font-size:.78rem;color:#888;margin:6px 0 0">Sin costo. Coordinamos el horario.</p>
+      </div>
+      <div class="checkout-option" style="cursor:pointer;margin-top:12px" onclick="elegirEntrega('envio')">
+        <strong style="font-size:.9rem">🚚 Envío a domicilio</strong>
+        <p style="font-size:.78rem;color:#888;margin:6px 0 0">Costo fijo <strong>$3.000</strong>. Te lo llevamos a la puerta.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL FORMULARIO DE PEDIDO -->
+  <div class="consulta-overlay" id="pedidoFormOverlay" onclick="if(event.target===this)cerrarPedidoForm()">
+    <div class="checkout-box" style="max-width:460px">
+      <button class="modal-close" onclick="cerrarPedidoForm()">✕</button>
+      <h3 class="checkout-title" id="pedidoFormTitulo">Datos para el retiro</h3>
+      <p class="checkout-sub" id="pedidoFormSub">Completá tus datos y elegí el horario.</p>
+      <form id="pedidoForm" onsubmit="submitPedido(event)" style="display:flex;flex-direction:column;gap:12px">
+        <input type="hidden" id="pMetodoPago" />
+        <input type="hidden" id="pTipoEntrega" />
+        <div>
+          <label style="font-size:.72rem;color:#888;display:block;margin-bottom:4px">Nombre completo *</label>
+          <input type="text" id="pNombreCliente" required placeholder="Tu nombre" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:3px;font-size:.82rem" />
+        </div>
+        <div>
+          <label style="font-size:.72rem;color:#888;display:block;margin-bottom:4px">¿Cómo te avisamos?</label>
+          <select id="pTipoContacto" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:3px;font-size:.82rem;margin-bottom:6px" onchange="toggleContactoLabel()">
+            <option value="whatsapp">WhatsApp</option>
+            <option value="email">Email</option>
+          </select>
+          <input type="text" id="pContactoCliente" required placeholder="Teléfono o email" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:3px;font-size:.82rem" />
+        </div>
+        <div id="pDireccionWrap" style="display:none">
+          <label style="font-size:.72rem;color:#888;display:block;margin-bottom:4px">Dirección de entrega *</label>
+          <input type="text" id="pDireccion" placeholder="Calle, número, ciudad" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:3px;font-size:.82rem" />
+        </div>
+        <div>
+          <label style="font-size:.72rem;color:#888;display:block;margin-bottom:4px">Horario disponible *</label>
+          <select id="pHorario" required style="width:100%;padding:10px;border:1px solid #ddd;border-radius:3px;font-size:.82rem">
+            <option value="">Cargando horarios...</option>
+          </select>
+        </div>
+        <p style="font-size:.7rem;color:#aaa" id="pHorarioInfo"></p>
+        <button type="submit" class="btn btn-gold full">Confirmar pedido</button>
+      </form>
     </div>
   </div>
 

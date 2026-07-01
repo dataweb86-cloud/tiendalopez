@@ -89,6 +89,25 @@
     .talle-chk input{display:none}
     .talle-chk:has(input:checked){background:var(--dark);color:var(--white);border-color:var(--dark)}
     .talle-chk:hover{border-color:var(--dark)}
+    /* ── VARIANTES COLOR ── */
+    .variante-row{display:flex;align-items:center;gap:10px;background:#faf8f5;border:1px solid #eee;border-radius:4px;padding:10px 12px;flex-wrap:wrap}
+    .variante-color-input{width:130px;font-size:.78rem;padding:6px 8px;border:1px solid #ddd;border-radius:3px}
+    .variante-stock-cell{display:flex;flex-direction:column;align-items:center;gap:3px}
+    .variante-stock-cell label{font-size:.58rem;color:#999;text-transform:uppercase;letter-spacing:.05em}
+    .variante-stock-cell input{width:52px;text-align:center;font-size:.78rem;padding:5px 4px;border:1px solid #ddd;border-radius:3px}
+    .variante-stock-cell input.sin-stock{border-color:#fca5a5;background:#fef2f2;color:#dc2626}
+    /* ── HORARIOS ── */
+    .horario-row{display:grid;grid-template-columns:90px 1fr 1fr auto;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid #f0f0f0}
+    .horario-row:last-child{border-bottom:none}
+    .horario-dia{font-size:.82rem;font-weight:500}
+    /* ── PEDIDO CARD ── */
+    .pedido-card{border:1px solid #eee;border-radius:4px;padding:16px;margin-bottom:12px}
+    .pedido-card.pendiente{border-left:3px solid var(--gold)}
+    .pedido-card.aceptado{border-left:3px solid #16a34a}
+    .pedido-card.rechazado{border-left:3px solid #dc2626}
+    .pedido-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px}
+    .pedido-items{font-size:.75rem;color:#555;margin:8px 0;line-height:1.6}
+    .pedido-footer{display:flex;gap:8px;justify-content:flex-end;margin-top:10px}
     .upload-area{position:relative;border:2px dashed #e0d8cc;border-radius:4px;padding:16px 8px;text-align:center;cursor:pointer;transition:all .2s;background:#faf8f5}
     .upload-area:hover{border-color:var(--gold);background:#fdf9f0}
     .upload-area p{font-size:.78rem;color:#888;margin:6px 0 3px}
@@ -207,8 +226,11 @@
     <div class="nav-item" onclick="showPage('nuevo-producto')"><span class="ico">➕</span> Nuevo Producto</div>
     <div class="nav-section">Gestión</div>
     <div class="nav-item" onclick="showPage('consultas')"><span class="ico">💬</span> Consultas <span class="nav-badge" id="badgeConsultas" style="display:none">0</span></div>
+    <div class="nav-item" onclick="showPage('pedidos')"><span class="ico">🛍️</span> Pedidos <span class="nav-badge" id="badgePedidos" style="display:none">0</span></div>
+    <div class="nav-item" onclick="showPage('stock-avisos')"><span class="ico">🔔</span> Avisos Stock <span class="nav-badge" id="badgeStock" style="display:none">0</span></div>
     <div class="nav-item" onclick="showPage('ventas')"><span class="ico">💰</span> Ventas</div>
     <div class="nav-section">Operaciones</div>
+    <div class="nav-item" onclick="showPage('horarios')"><span class="ico">🕐</span> Horarios Local</div>
     <div class="nav-item" onclick="showPage('proveedores')"><span class="ico">🏭</span> Proveedores</div>
     <div class="nav-item" onclick="showPage('nuevo-proveedor')"><span class="ico">➕</span> Nuevo Proveedor</div>
   </nav>
@@ -334,30 +356,55 @@
                 <option value="false">Oculto</option>
               </select></div>
             <div class="fg full">
-              <label>Talles disponibles</label>
-              <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:4px" id="tallesWrap">
-                <label class="talle-chk"><input type="checkbox" value="XS" /> XS</label>
-                <label class="talle-chk"><input type="checkbox" value="S" /> S</label>
-                <label class="talle-chk"><input type="checkbox" value="M" /> M</label>
-                <label class="talle-chk"><input type="checkbox" value="L" /> L</label>
-                <label class="talle-chk"><input type="checkbox" value="XL" /> XL</label>
-                <label class="talle-chk"><input type="checkbox" value="XXL" /> XXL</label>
-                <label class="talle-chk"><input type="checkbox" value="Único" /> Único</label>
-                <label class="talle-chk"><input type="checkbox" value="32" /> 32</label>
-                <label class="talle-chk"><input type="checkbox" value="34" /> 34</label>
-                <label class="talle-chk"><input type="checkbox" value="36" /> 36</label>
-                <label class="talle-chk"><input type="checkbox" value="38" /> 38</label>
-                <label class="talle-chk"><input type="checkbox" value="40" /> 40</label>
-                <label class="talle-chk"><input type="checkbox" value="42" /> 42</label>
-                <label class="talle-chk"><input type="checkbox" value="44" /> 44</label>
-                <label class="talle-chk"><input type="checkbox" value="46" /> 46</label>
+              <label>Talles disponibles <span style="font-size:.66rem;color:#aaa;font-weight:400">(seleccioná los que aplican)</span></label>
+              <div style="margin-top:6px">
+                <p style="font-size:.62rem;color:#888;margin-bottom:4px;text-transform:uppercase;letter-spacing:.08em">Numérico chico</p>
+                <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px" id="tallesWrap">
+                  <label class="talle-chk"><input type="checkbox" value="1" /> 1</label>
+                  <label class="talle-chk"><input type="checkbox" value="2" /> 2</label>
+                  <label class="talle-chk"><input type="checkbox" value="3" /> 3</label>
+                  <label class="talle-chk"><input type="checkbox" value="4" /> 4</label>
+                  <label class="talle-chk"><input type="checkbox" value="5" /> 5</label>
+                  <label class="talle-chk"><input type="checkbox" value="6" /> 6</label>
+                  <label class="talle-chk"><input type="checkbox" value="7" /> 7</label>
+                  <label class="talle-chk"><input type="checkbox" value="8" /> 8</label>
+                  <label class="talle-chk"><input type="checkbox" value="9" /> 9</label>
+                </div>
+                <p style="font-size:.62rem;color:#888;margin-bottom:4px;text-transform:uppercase;letter-spacing:.08em">Letras</p>
+                <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px">
+                  <label class="talle-chk"><input type="checkbox" value="XS" /> XS</label>
+                  <label class="talle-chk"><input type="checkbox" value="S" /> S</label>
+                  <label class="talle-chk"><input type="checkbox" value="M" /> M</label>
+                  <label class="talle-chk"><input type="checkbox" value="L" /> L</label>
+                  <label class="talle-chk"><input type="checkbox" value="XL" /> XL</label>
+                  <label class="talle-chk"><input type="checkbox" value="XXL" /> XXL</label>
+                  <label class="talle-chk"><input type="checkbox" value="Único" /> Único</label>
+                </div>
+                <p style="font-size:.62rem;color:#888;margin-bottom:4px;text-transform:uppercase;letter-spacing:.08em">Numérico ropa</p>
+                <div style="display:flex;flex-wrap:wrap;gap:6px">
+                  <label class="talle-chk"><input type="checkbox" value="36" /> 36</label>
+                  <label class="talle-chk"><input type="checkbox" value="38" /> 38</label>
+                  <label class="talle-chk"><input type="checkbox" value="40" /> 40</label>
+                  <label class="talle-chk"><input type="checkbox" value="42" /> 42</label>
+                  <label class="talle-chk"><input type="checkbox" value="44" /> 44</label>
+                  <label class="talle-chk"><input type="checkbox" value="46" /> 46</label>
+                  <label class="talle-chk"><input type="checkbox" value="48" /> 48</label>
+                  <label class="talle-chk"><input type="checkbox" value="50" /> 50</label>
+                  <label class="talle-chk"><input type="checkbox" value="52" /> 52</label>
+                </div>
               </div>
-              <p style="font-size:.62rem;color:#bbb;margin-top:6px">O escribilos manualmente separados por coma:</p>
-              <input type="text" id="fTallesCustom" placeholder="Ej: S, M, L, XL o 38, 40, 42" style="margin-top:4px" oninput="syncTallesCustom()" />
             </div>
             <div class="fg full"><label>Descripción</label>
               <textarea id="fDesc" placeholder="Descripción del producto..."></textarea></div>
           </div>
+        </div>
+
+        <!-- Colores y Stock por variante -->
+        <div class="form-card">
+          <h3>Colores y Stock <span style="font-size:.72rem;font-weight:400;color:#aaa">— ingresá cada color y la cantidad por talle</span></h3>
+          <div id="variantesWrap" style="display:flex;flex-direction:column;gap:10px;margin-bottom:12px"></div>
+          <button type="button" class="btn btn-outline btn-sm" onclick="agregarColor()">+ Agregar color</button>
+          <p style="font-size:.62rem;color:#aaa;margin-top:8px">Los talles disponibles se toman de la selección de arriba. Guardá los talles primero.</p>
         </div>
 
         <!-- Costo y Precio -->
@@ -511,7 +558,87 @@
       </form>
     </div>
 
+    <!-- ═══════════════ PEDIDOS ═══════════════ -->
+    <div class="page" id="page-pedidos">
+      <div class="page-header">
+        <div><h2>Pedidos</h2><p id="pedidoCount">Cargando...</p></div>
+        <div style="display:flex;gap:8px">
+          <select id="filtroPedidoEstado" style="width:auto;padding:8px 12px;font-size:.72rem" onchange="loadPedidos()">
+            <option value="">Todos</option>
+            <option value="pendiente">Pendientes</option>
+            <option value="aceptado">Aceptados</option>
+            <option value="rechazado">Rechazados</option>
+          </select>
+          <button class="btn btn-outline btn-sm" onclick="loadPedidos()">↺ Actualizar</button>
+        </div>
+      </div>
+      <div class="table-card">
+        <div id="pedidosBody"><div class="loading"><div class="spinner"></div></div></div>
+      </div>
+    </div>
+
+    <!-- ═══════════════ AVISOS STOCK ═══════════════ -->
+    <div class="page" id="page-stock-avisos">
+      <div class="page-header">
+        <div><h2>Avisos de Stock</h2><p id="avisosCount">Clientes esperando reposición</p></div>
+        <button class="btn btn-outline btn-sm" onclick="loadAvisos()">↺ Actualizar</button>
+      </div>
+      <div class="table-card">
+        <div id="avisosBody"><div class="loading"><div class="spinner"></div></div></div>
+      </div>
+    </div>
+
+    <!-- ═══════════════ HORARIOS ═══════════════ -->
+    <div class="page" id="page-horarios">
+      <div class="page-header">
+        <div><h2>Horarios del Local</h2><p>Configurá los días y horarios de atención</p></div>
+        <button class="btn btn-gold btn-sm" onclick="saveHorarios()">Guardar cambios</button>
+      </div>
+      <div class="form-card">
+        <div id="horariosWrap" style="display:flex;flex-direction:column;gap:12px">
+          <div class="loading"><div class="spinner"></div></div>
+        </div>
+        <p style="font-size:.68rem;color:#aaa;margin-top:16px">Los clientes verán estos horarios al coordinar la entrega o retiro.</p>
+      </div>
+    </div>
+
   </main>
+
+  <!-- MODAL RESPUESTA PEDIDO -->
+  <div style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:400;align-items:center;justify-content:center;padding:20px" id="pedidoRespOverlay">
+    <div style="background:#fff;border-radius:6px;max-width:460px;width:100%;padding:28px;position:relative">
+      <button onclick="document.getElementById('pedidoRespOverlay').style.display='none'" style="position:absolute;top:12px;right:12px;background:#f5f5f5;border:none;width:28px;height:28px;border-radius:50%;cursor:pointer">✕</button>
+      <h3 style="font-family:var(--serif);font-weight:300;font-size:1.3rem;margin-bottom:6px" id="pedidoRespTitulo">Responder pedido</h3>
+      <input type="hidden" id="pedidoRespId" />
+      <input type="hidden" id="pedidoRespContacto" />
+      <input type="hidden" id="pedidoRespTipoContacto" />
+      <input type="hidden" id="pedidoRespAccion" />
+      <div style="background:#f8f8f8;border-radius:4px;padding:12px;margin:12px 0;font-size:.78rem" id="pedidoRespDetalle"></div>
+      <label style="font-size:.72rem;color:#888;display:block;margin-bottom:4px">Mensaje para el cliente</label>
+      <textarea id="pedidoRespMsg" rows="4" style="width:100%;resize:vertical;font-size:.78rem" placeholder="Escribí el mensaje..."></textarea>
+      <div style="display:flex;gap:10px;margin-top:14px;justify-content:flex-end">
+        <button class="btn btn-outline btn-sm" onclick="document.getElementById('pedidoRespOverlay').style.display='none'">Cancelar</button>
+        <button class="btn btn-gold btn-sm" onclick="enviarRespuestaPedido()">Enviar por WhatsApp</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL AVISO STOCK -->
+  <div style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:400;align-items:center;justify-content:center;padding:20px" id="avisoStockOverlay">
+    <div style="background:#fff;border-radius:6px;max-width:460px;width:100%;padding:28px;position:relative">
+      <button onclick="document.getElementById('avisoStockOverlay').style.display='none'" style="position:absolute;top:12px;right:12px;background:#f5f5f5;border:none;width:28px;height:28px;border-radius:50%;cursor:pointer">✕</button>
+      <h3 style="font-family:var(--serif);font-weight:300;font-size:1.3rem;margin-bottom:4px">Avisar al cliente</h3>
+      <input type="hidden" id="avisoId" />
+      <div style="background:#f8f8f8;border-radius:4px;padding:12px;margin:12px 0;font-size:.78rem" id="avisoDetalle"></div>
+      <label style="font-size:.72rem;color:#888;display:block;margin-bottom:4px">Mensaje (ya viene redactado, podés editarlo)</label>
+      <textarea id="avisoMsg" rows="5" style="width:100%;resize:vertical;font-size:.78rem"></textarea>
+      <div style="display:flex;gap:10px;margin-top:14px;justify-content:flex-end">
+        <button class="btn btn-outline btn-sm" onclick="document.getElementById('avisoStockOverlay').style.display='none'">Cancelar</button>
+        <button class="btn btn-gold btn-sm" onclick="enviarAvisoStock()">Enviar por WhatsApp</button>
+      </div>
+    </div>
+  </div>
+
 </div>
 
 <!-- MODAL REGISTRAR VENTA -->
@@ -573,11 +700,14 @@ function showPage(id) {
   document.getElementById('page-'+id).classList.add('active');
   document.querySelectorAll('.nav-item').forEach(n=>{if(n.textContent.toLowerCase().includes(id.replace('-',' ').toLowerCase().split(' ')[0]))n.classList.add('active')});
   // lazy load
-  if(id==='dashboard') loadDashboard();
-  if(id==='productos') loadProductos();
-  if(id==='consultas') loadConsultas();
-  if(id==='ventas') loadVentas();
-  if(id==='proveedores') loadProveedores();
+  if(id==='dashboard')    loadDashboard();
+  if(id==='productos')    loadProductos();
+  if(id==='consultas')    loadConsultas();
+  if(id==='ventas')       loadVentas();
+  if(id==='proveedores')  loadProveedores();
+  if(id==='pedidos')      { _pedidosRows=[]; loadPedidos(); }
+  if(id==='stock-avisos') { _avisosRows=[]; loadAvisos(); }
+  if(id==='horarios')     loadHorarios();
 }
 
 /* ══════════════════════════════════════
@@ -767,6 +897,9 @@ function editarProducto(id) {
   if(p.imagen_url){previewImgAdmin(p.imagen_url,1)}
   if(p.imagen_url2){previewImgAdmin(p.imagen_url2,2)}
   if(p.imagen_url3){previewImgAdmin(p.imagen_url3,3)}
+  variantesData=[];
+  renderVariantesGrid();
+  loadVariantesForProducto(p.id);
   document.getElementById('formProdTitle').textContent='Editar Producto';
   recalcMargen();
   showPage('nuevo-producto');
@@ -849,8 +982,16 @@ async function saveProduct(e) {
     talles:getTalles()||null,
   };
   try{
-    if(id){await api(`/rest/v1/productos?id=eq.${id}`,{method:'PATCH',body:JSON.stringify(body)});toast('Producto actualizado ✓');}
-    else{await api('/rest/v1/productos',{method:'POST',body:JSON.stringify(body)});toast('Producto creado ✓');}
+    if(id){
+      await api(`/rest/v1/productos?id=eq.${id}`,{method:'PATCH',body:JSON.stringify(body)});
+      await saveVariantes(parseInt(id));
+      toast('Producto actualizado ✓');
+    } else {
+      const created = await api('/rest/v1/productos',{method:'POST',body:JSON.stringify(body)});
+      const newId = Array.isArray(created) ? created[0]?.id : created?.id;
+      if(newId) await saveVariantes(newId);
+      toast('Producto creado ✓');
+    }
     resetProdForm();showPage('productos');
   }catch(err){toast('Error: '+err.message,true);}
   finally{btn.textContent='Guardar producto';btn.disabled=false;}
@@ -869,6 +1010,8 @@ function resetProdForm() {
   });
   document.getElementById('margenDisplay').innerHTML='Ingresá costo y precio';
   setTalles('');
+  variantesData=[];
+  document.getElementById('variantesWrap').innerHTML='';
   setModoPrecio('directo');
 }
 
@@ -1215,36 +1358,257 @@ function toast(msg,err=false){
 
 /* ── TALLES ── */
 function getTalles() {
-  const checks = [...document.querySelectorAll('#tallesWrap input:checked')].map(i=>i.value);
-  const custom = document.getElementById('fTallesCustom').value.trim();
-  if (custom) return custom;
-  return checks.join(',');
+  return [...document.querySelectorAll('#tallesWrap input:checked')].map(i=>i.value).join(',');
 }
-
 function setTalles(str) {
-  // reset todos
   document.querySelectorAll('#tallesWrap input').forEach(i=>i.checked=false);
-  document.getElementById('fTallesCustom').value='';
   if (!str) return;
-  const vals = str.split(',').map(s=>s.trim());
-  let allFound = true;
-  vals.forEach(v=>{
+  str.split(',').map(s=>s.trim()).forEach(v=>{
     const chk = document.querySelector(`#tallesWrap input[value="${v}"]`);
-    if (chk) chk.checked=true; else allFound=false;
+    if (chk) chk.checked=true;
   });
-  if (!allFound) document.getElementById('fTallesCustom').value=str;
+  renderVariantesGrid();
 }
-
-function syncTallesCustom() {
-  // si escribe manual, desmarcar checkboxes
-  document.querySelectorAll('#tallesWrap input').forEach(i=>i.checked=false);
-}
-
 document.querySelectorAll('#tallesWrap input').forEach(chk=>{
-  chk.addEventListener('change',()=>{
-    document.getElementById('fTallesCustom').value='';
-  });
+  chk.addEventListener('change', renderVariantesGrid);
 });
+
+/* ── VARIANTES COLOR + TALLE + STOCK ── */
+let variantesData = [];
+
+function getTallesSeleccionados() {
+  return [...document.querySelectorAll('#tallesWrap input:checked')].map(i=>i.value);
+}
+
+function agregarColor() {
+  variantesData.push({ color:'', talles:{} });
+  renderVariantesGrid();
+}
+
+function quitarColor(idx) {
+  variantesData.splice(idx,1);
+  renderVariantesGrid();
+}
+
+function renderVariantesGrid() {
+  const talles = getTallesSeleccionados();
+  const wrap = document.getElementById('variantesWrap');
+  if (!talles.length) {
+    wrap.innerHTML='<p style="font-size:.75rem;color:#aaa">Primero seleccioná los talles disponibles arriba.</p>';
+    return;
+  }
+  if (!variantesData.length) { wrap.innerHTML=''; return; }
+  wrap.innerHTML = variantesData.map((v,idx)=>`
+    <div class="variante-row">
+      <input class="variante-color-input" type="text" placeholder="Ej: Rojo, Negro, Azul"
+        value="${v.color}" oninput="variantesData[${idx}].color=this.value" />
+      ${talles.map(t=>`
+        <div class="variante-stock-cell">
+          <label>${t}</label>
+          <input type="number" min="0" value="${v.talles[t]||0}"
+            class="${(v.talles[t]||0)==0?'sin-stock':''}"
+            oninput="variantesData[${idx}].talles['${t}']=parseInt(this.value)||0;this.className=(parseInt(this.value)||0)==0?'sin-stock':''" />
+        </div>`).join('')}
+      <button type="button" onclick="quitarColor(${idx})"
+        style="margin-left:auto;background:none;border:none;color:#aaa;font-size:1.1rem;cursor:pointer;flex-shrink:0">✕</button>
+    </div>`).join('');
+}
+
+function getVariantes() {
+  return variantesData.filter(v=>v.color.trim()).flatMap(v=>
+    Object.entries(v.talles).map(([talle,stock])=>({color:v.color.trim(),talle,stock}))
+  );
+}
+
+async function saveVariantes(productoId) {
+  const vars = getVariantes();
+  if (!vars.length) return;
+  await api(`/rest/v1/producto_variantes?producto_id=eq.${productoId}`,{method:'DELETE'});
+  if (vars.length) {
+    await api('/rest/v1/producto_variantes',{
+      method:'POST',
+      body: JSON.stringify(vars.map(v=>({...v, producto_id:productoId})))
+    });
+  }
+}
+
+async function loadVariantesForProducto(productoId) {
+  try {
+    const rows = await fetch(`${SB_URL}/rest/v1/producto_variantes?producto_id=eq.${productoId}&order=color.asc,talle.asc`,{headers:HDR_READ}).then(r=>r.json());
+    variantesData = [];
+    const byColor = {};
+    rows.forEach(r=>{ if(!byColor[r.color]) byColor[r.color]={color:r.color,talles:{}}; byColor[r.color].talles[r.talle]=r.stock; });
+    variantesData = Object.values(byColor);
+    renderVariantesGrid();
+  } catch(e){ variantesData=[]; }
+}
+
+/* ══════════════════════════════════════
+   PEDIDOS
+══════════════════════════════════════ */
+const DIAS=['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
+const fmt2=(s)=>s||'—';
+
+async function loadPedidos() {
+  const est = document.getElementById('filtroPedidoEstado').value;
+  const q = est ? `&estado=eq.${est}` : '';
+  const rows = await api(`/rest/v1/pedidos?order=fecha.desc${q}`);
+  const el = document.getElementById('pedidosBody');
+  const pend = rows.filter(r=>r.estado==='pendiente').length;
+  document.getElementById('pedidoCount').textContent = `${rows.length} pedido${rows.length!==1?'s':''} — ${pend} pendiente${pend!==1?'s':''}`;
+  const badge = document.getElementById('badgePedidos');
+  badge.textContent=pend; badge.style.display=pend?'':'none';
+  if(!rows.length){el.innerHTML='<p style="text-align:center;padding:40px;color:#aaa">Sin pedidos.</p>';return;}
+  el.innerHTML = rows.map(p=>{
+    const items = (p.items||[]).map(i=>`${i.nombre} — ${i.color||''} talle ${i.talle||''} x${i.cantidad} $${(i.precio||0).toLocaleString('es-AR')}`).join('<br>');
+    const entrega = p.tipo_entrega==='envio'?`Envío domicilio (+$3.000)${p.direccion?` — ${p.direccion}`:''}`:p.tipo_entrega==='retiro'?'Retiro en local':'—';
+    const dt = new Date(p.fecha); const fechaTxt = dt.toLocaleDateString('es-AR')+' '+dt.toLocaleTimeString('es-AR',{hour:'2-digit',minute:'2-digit'});
+    return `<div class="pedido-card ${p.estado}">
+      <div class="pedido-header">
+        <div>
+          <strong style="font-size:.85rem">${p.nombre||'—'}</strong>
+          <span class="badge ${p.estado==='pendiente'?'b-orange':p.estado==='aceptado'?'b-green':'b-red'}" style="margin-left:8px">${p.estado}</span>
+        </div>
+        <span style="font-size:.72rem;color:#aaa">${fechaTxt}</span>
+      </div>
+      <div class="pedido-items">${items||'—'}</div>
+      <div style="font-size:.75rem;color:#666;margin-bottom:4px">
+        <strong>Total:</strong> $${(p.total||0).toLocaleString('es-AR')} &nbsp;|&nbsp;
+        <strong>Pago:</strong> ${p.metodo_pago==='mp'?'Mercado Pago':'Efectivo'} &nbsp;|&nbsp;
+        <strong>Entrega:</strong> ${entrega}
+      </div>
+      <div style="font-size:.75rem;color:#666">
+        <strong>Contacto:</strong> ${p.contacto||'—'} (${p.tipo_contacto==='whatsapp'?'WhatsApp':'Email'}) &nbsp;|&nbsp;
+        <strong>Horario:</strong> ${p.horario||'—'}
+      </div>
+      <div class="pedido-footer">
+        ${p.estado==='pendiente'?`
+          <button class="btn btn-outline btn-sm" onclick="abrirRespPedido(${p.id},'rechazado')">Rechazar</button>
+          <button class="btn btn-gold btn-sm" onclick="abrirRespPedido(${p.id},'aceptado')">Aceptar</button>
+        `:p.estado==='aceptado'?`<button class="btn btn-outline btn-sm" onclick="abrirRespPedido(${p.id},'mensaje')">Enviar mensaje</button>`:''}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+let _pedidosRows = [];
+async function abrirRespPedido(id, accion) {
+  if (!_pedidosRows.length) _pedidosRows = await api('/rest/v1/pedidos?order=fecha.desc');
+  const p = _pedidosRows.find(x=>x.id===id); if(!p) return;
+  document.getElementById('pedidoRespId').value=id;
+  document.getElementById('pedidoRespContacto').value=p.contacto||'';
+  document.getElementById('pedidoRespTipoContacto').value=p.tipo_contacto||'whatsapp';
+  document.getElementById('pedidoRespAccion').value=accion;
+  const items=(p.items||[]).map(i=>`• ${i.nombre} — ${i.color||''} talle ${i.talle||''} x${i.cantidad}`).join('\n');
+  document.getElementById('pedidoRespDetalle').innerHTML=
+    `<strong>${p.nombre}</strong> — ${p.contacto}<br>${items}`;
+  const hora = p.horario||'el horario acordado';
+  let msg = '';
+  if(accion==='aceptado') msg=`Hola ${p.nombre||''}! 👋 Confirmamos tu pedido:\n${items}\n\n${p.tipo_entrega==='retiro'?`Te esperamos en el local a las *${hora}*.`:`Te enviamos el pedido a las *${hora}* a tu domicilio.`}\n\nCualquier duda escribinos. ¡Gracias por elegirnos! 💛`;
+  else if(accion==='rechazado') msg=`Hola ${p.nombre||''}! Lamentablemente en este momento no podemos confirmar tu pedido para ${hora}. Te contactamos a la brevedad para coordinar. Disculpá las molestias!`;
+  else msg=`Hola ${p.nombre||''}! Te escribimos por tu pedido. `;
+  document.getElementById('pedidoRespMsg').value=msg;
+  document.getElementById('pedidoRespTitulo').textContent=accion==='aceptado'?'Confirmar pedido':accion==='rechazado'?'Rechazar pedido':'Enviar mensaje';
+  document.getElementById('pedidoRespOverlay').style.display='flex';
+}
+
+async function enviarRespuestaPedido() {
+  const id=parseInt(document.getElementById('pedidoRespId').value);
+  const accion=document.getElementById('pedidoRespAccion').value;
+  const contacto=document.getElementById('pedidoRespContacto').value;
+  const tipo=document.getElementById('pedidoRespTipoContacto').value;
+  const msg=document.getElementById('pedidoRespMsg').value;
+  if(accion==='aceptado'||accion==='rechazado') {
+    await api(`/rest/v1/pedidos?id=eq.${id}`,{method:'PATCH',body:JSON.stringify({estado:accion})});
+  }
+  const waUrl=`https://wa.me/${contacto.replace(/\D/g,'')}?text=${encodeURIComponent(msg)}`;
+  window.open(waUrl,'_blank');
+  document.getElementById('pedidoRespOverlay').style.display='none';
+  _pedidosRows=[];
+  loadPedidos();
+  toast('Respuesta enviada ✓');
+}
+
+/* ══════════════════════════════════════
+   AVISOS DE STOCK
+══════════════════════════════════════ */
+async function loadAvisos() {
+  const rows = await api('/rest/v1/solicitudes_stock?notificado=eq.false&order=fecha.desc');
+  const el=document.getElementById('avisosBody');
+  document.getElementById('avisosCount').textContent=`${rows.length} solicitud${rows.length!==1?'es':''} pendiente${rows.length!==1?'s':''}`;
+  const badge=document.getElementById('badgeStock');
+  badge.textContent=rows.length; badge.style.display=rows.length?'':'none';
+  if(!rows.length){el.innerHTML='<p style="text-align:center;padding:40px;color:#aaa">Sin avisos pendientes 🎉</p>';return;}
+  el.innerHTML=`<table><thead><tr><th>Producto</th><th>Color</th><th>Talle</th><th>Cliente</th><th>Contacto</th><th>Fecha</th><th></th></tr></thead><tbody>
+  ${rows.map(r=>{
+    const dt=new Date(r.fecha);
+    return `<tr>
+      <td><strong style="font-size:.78rem">${r.producto_nombre||'—'}</strong></td>
+      <td>${r.color||'—'}</td><td>${r.talle||'—'}</td>
+      <td>${r.nombre||'—'}</td>
+      <td><span style="font-size:.72rem">${r.contacto||'—'}</span><br><span style="font-size:.65rem;color:#aaa">${r.tipo_contacto==='whatsapp'?'WhatsApp':'Email'}</span></td>
+      <td style="font-size:.72rem;color:#aaa">${dt.toLocaleDateString('es-AR')}</td>
+      <td><button class="btn btn-gold btn-sm" onclick="abrirAvisoStock(${r.id})">Avisar</button></td>
+    </tr>`;
+  }).join('')}</tbody></table>`;
+}
+
+let _avisosRows=[];
+async function abrirAvisoStock(id) {
+  if(!_avisosRows.length) _avisosRows=await api('/rest/v1/solicitudes_stock?notificado=eq.false&order=fecha.desc');
+  const r=_avisosRows.find(x=>x.id===id); if(!r) return;
+  document.getElementById('avisoId').value=id;
+  document.getElementById('avisoDetalle').innerHTML=
+    `<strong>${r.producto_nombre}</strong> — Color: ${r.color||'—'}, Talle: ${r.talle||'—'}<br>Cliente: ${r.nombre} (${r.contacto})`;
+  const storeUrl=`${location.origin.replace('5200','').replace('localhost','vanesalopez.vercel.app')}`;
+  const msg=`Hola ${r.nombre}! 🎉 Tenemos buenas noticias: *${r.producto_nombre}* en color *${r.color||'—'}* talle *${r.talle||'—'}* ya está disponible en stock!\n\nPodés verlo y comprarlo aquí: https://vanesalopez.vercel.app\n\n¡No te lo pierdas antes de que se agote! 💛`;
+  document.getElementById('avisoMsg').value=msg;
+  document.getElementById('avisoStockOverlay').style.display='flex';
+}
+
+async function enviarAvisoStock() {
+  const id=parseInt(document.getElementById('avisoId').value);
+  if(!_avisosRows.length) _avisosRows=await api('/rest/v1/solicitudes_stock?notificado=eq.false&order=fecha.desc');
+  const r=_avisosRows.find(x=>x.id===id); if(!r) return;
+  const msg=document.getElementById('avisoMsg').value;
+  const waUrl=`https://wa.me/${r.contacto.replace(/\D/g,'')}?text=${encodeURIComponent(msg)}`;
+  window.open(waUrl,'_blank');
+  await api(`/rest/v1/solicitudes_stock?id=eq.${id}`,{method:'PATCH',body:JSON.stringify({notificado:true})});
+  document.getElementById('avisoStockOverlay').style.display='none';
+  _avisosRows=[];
+  loadAvisos();
+  toast('Aviso enviado y marcado como notificado ✓');
+}
+
+/* ══════════════════════════════════════
+   HORARIOS DEL LOCAL
+══════════════════════════════════════ */
+const DIA_NOMBRES=['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
+
+async function loadHorarios() {
+  const rows=await api('/rest/v1/horarios_local?order=dia.asc');
+  const wrap=document.getElementById('horariosWrap');
+  wrap.innerHTML=rows.map(h=>`
+    <div class="horario-row">
+      <div class="horario-dia">${DIA_NOMBRES[h.dia]}</div>
+      <input type="time" value="${h.apertura||'09:00'}" id="h_aper_${h.dia}" style="padding:6px 8px;border:1px solid #ddd;border-radius:3px;font-size:.78rem" />
+      <input type="time" value="${h.cierre||'18:00'}"  id="h_cier_${h.dia}" style="padding:6px 8px;border:1px solid #ddd;border-radius:3px;font-size:.78rem" />
+      <label style="display:flex;align-items:center;gap:6px;font-size:.75rem;cursor:pointer">
+        <input type="checkbox" id="h_act_${h.dia}" ${h.activo?'checked':''} /> Activo
+      </label>
+    </div>`).join('');
+}
+
+async function saveHorarios() {
+  const rows=await api('/rest/v1/horarios_local?order=dia.asc');
+  for(const h of rows){
+    const aper=document.getElementById(`h_aper_${h.dia}`)?.value;
+    const cier=document.getElementById(`h_cier_${h.dia}`)?.value;
+    const act=document.getElementById(`h_act_${h.dia}`)?.checked;
+    await api(`/rest/v1/horarios_local?id=eq.${h.id}`,{method:'PATCH',body:JSON.stringify({apertura:aper,cierre:cier,activo:act})});
+  }
+  toast('Horarios guardados ✓');
+}
 
 /* ── LOGIN ── */
 function doLogin(e) {
@@ -1269,6 +1633,9 @@ function checkAuth() {
     document.getElementById('loginScreen').style.display = 'none';
     loadDashboard();
     loadProductos();
+    // badges silenciosos al inicio
+    api('/rest/v1/pedidos?estado=eq.pendiente&select=id').then(r=>{ const b=document.getElementById('badgePedidos'); if(r?.length){b.textContent=r.length;b.style.display='';} }).catch(()=>{});
+    api('/rest/v1/solicitudes_stock?notificado=eq.false&select=id').then(r=>{ const b=document.getElementById('badgeStock'); if(r?.length){b.textContent=r.length;b.style.display='';} }).catch(()=>{});
   }
 }
 

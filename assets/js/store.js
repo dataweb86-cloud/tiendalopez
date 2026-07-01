@@ -17,21 +17,39 @@ const COLORS = [
 
 let cart = [];
 let currentProduct = null;
+let currentColor = null;
 let allProducts = [];
 
 /* ─── FETCH SUPABASE ────────────────────────────── */
 async function fetchProducts() {
   try {
+    // intenta traer con variantes embebidas
     const res = await fetch(
+      `${SB_URL}/rest/v1/productos?activo=eq.true&select=*,producto_variantes(color,talle,stock)&order=orden.asc`,
+      { headers: { apikey: SB_KEY, Authorization: `Bearer ${SB_KEY}` } }
+    );
+    if (res.ok) return await res.json();
+    // fallback sin variantes (antes de ejecutar setup-db-v4.sql)
+    const res2 = await fetch(
       `${SB_URL}/rest/v1/productos?activo=eq.true&order=orden.asc`,
       { headers: { apikey: SB_KEY, Authorization: `Bearer ${SB_KEY}` } }
     );
-    if (!res.ok) throw new Error(await res.text());
-    return await res.json();
+    if (!res2.ok) throw new Error(await res2.text());
+    return await res2.json();
   } catch (e) {
     console.error('Supabase error:', e);
     return [];
   }
+}
+
+function getVariantes(p) { return p.producto_variantes || []; }
+function getColores(p)   { return [...new Set(getVariantes(p).map(v=>v.color))]; }
+function getTallesForColor(p, color) {
+  return getVariantes(p).filter(v=>v.color===color);
+}
+function getStock(p, color, talle) {
+  const v = getVariantes(p).find(v=>v.color===color&&v.talle===talle);
+  return v ? v.stock : null;
 }
 
 /* ─── RENDER PRODUCTS ───────────────────────────── */
@@ -113,20 +131,59 @@ function openModal(id) {
     thumbs.style.display = 'none';
     thumbs.innerHTML = '';
   }
-  // Talles dinámicos
-  const sizesEl = document.querySelector('.sizes');
-  const talles = (p.talles || '').split(',').map(s=>s.trim()).filter(Boolean);
-  if (talles.length) {
-    sizesEl.innerHTML = talles.map((t,i) =>
-      `<button class="size-btn${i===0?' active':''}" onclick="selectSize(this)">${t}</button>`
+  // Color picker desde variantes
+  currentColor = null;
+  const colores = getColores(p);
+  const colorPicker = document.getElementById('modalColorPicker');
+  const modalColors = document.getElementById('modalColors');
+  if (colores.length) {
+    modalColors.innerHTML = colores.map((c,i) =>
+      `<button class="color-btn${i===0?' active':''}" onclick="selectColor(this,'${c.replace(/'/g,"\\'")}')"> ${c}</button>`
     ).join('');
-    document.querySelector('.size-picker').style.display = '';
+    colorPicker.style.display = '';
+    currentColor = colores[0];
+    renderTallesForColor(p, colores[0]);
   } else {
-    document.querySelector('.size-picker').style.display = 'none';
+    colorPicker.style.display = 'none';
+    // fallback a talles del campo texto
+    const talles = (p.talles||'').split(',').map(s=>s.trim()).filter(Boolean);
+    const sp = document.getElementById('modalSizePicker');
+    const se = document.getElementById('modalSizes');
+    if (talles.length) {
+      se.innerHTML = talles.map((t,i)=>`<button class="size-btn${i===0?' active':''}" onclick="selectSize(this)">${t}</button>`).join('');
+      sp.style.display='';
+    } else { sp.style.display='none'; }
   }
 
   document.getElementById('modalOverlay').classList.add('active');
   document.body.style.overflow = 'hidden';
+}
+
+function renderTallesForColor(p, color) {
+  const varsForColor = getTallesForColor(p, color);
+  const sp = document.getElementById('modalSizePicker');
+  const se = document.getElementById('modalSizes');
+  if (!varsForColor.length) { sp.style.display='none'; return; }
+  sp.style.display='';
+  se.innerHTML = varsForColor.map((v)=>{
+    const noStock = v.stock === 0;
+    const colorSafe = color.replace(/'/g,"\\'");
+    const talleSafe = v.talle.replace(/'/g,"\\'");
+    return `<button class="size-btn${noStock?' sin-stock':''}"
+      onclick="${noStock?`abrirSinStock('${colorSafe}','${talleSafe}')`:`selectSize(this)`}"
+      title="${noStock?'Sin stock':'Talle disponible'}">
+      ${v.talle}${v.stock>0&&v.stock<=3?`<span style="font-size:.55rem;display:block;color:var(--gold)">¡Últimos!</span>`:''}
+    </button>`;
+  }).join('');
+  const firstBtn = se.querySelector('.size-btn:not(.sin-stock)');
+  firstBtn?.classList.add('active');
+}
+
+function selectColor(btn, color) {
+  document.querySelectorAll('.color-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  currentColor = color;
+  renderTallesForColor(currentProduct, color);
 }
 
 function selectModalImg(src, thumbEl) {
@@ -153,22 +210,36 @@ document.getElementById('modalOverlay').addEventListener('click', e => {
 /* ─── CART ──────────────────────────────────────── */
 function addToCart() {
   if (!currentProduct) return;
-  const size = document.querySelector('.size-btn.active')?.textContent || 'S';
-  addItemToCart(currentProduct, size);
+  const sizeBtn = document.querySelector('#modalSizes .size-btn.active');
+  const size = sizeBtn?.textContent?.trim().split('\n')[0].trim() || '';
+  const color = currentColor || '';
+  // verificar stock
+  if (color && size) {
+    const stock = getStock(currentProduct, color, size);
+    if (stock !== null && stock === 0) { abrirSinStock(color, size); return; }
+  }
+  addItemToCart(currentProduct, size, color);
   closeModal();
   openCart();
 }
 
 function quickAdd(id) {
   const p = getProduct(id);
-  if (p) { addItemToCart(p, 'M'); openCart(); }
+  if (!p) return;
+  const colores = getColores(p);
+  const color = colores[0] || '';
+  const varForColor = color ? getTallesForColor(p, color) : [];
+  const firstAvail = varForColor.find(v=>v.stock>0);
+  const talle = firstAvail?.talle || (p.talles||'').split(',')[0]?.trim() || '';
+  addItemToCart(p, talle, color);
+  openCart();
 }
 
-function addItemToCart(p, size) {
-  const key = `${p.id}-${size}`;
+function addItemToCart(p, size, color='') {
+  const key = `${p.id}-${color}-${size}`;
   const existing = cart.find(i => i.key === key);
   if (existing) { existing.qty++; }
-  else { cart.push({ key, ...p, size, qty: 1 }); }
+  else { cart.push({ key, ...p, size, color, qty: 1 }); }
   updateCartUI();
   showToast(`${p.nombre} agregado al carrito`);
 }
@@ -188,8 +259,8 @@ function updateCartUI() {
           ${i.imagen_url ? `<img src="${i.imagen_url}" style="width:100%;height:100%;object-fit:cover">` : ''}
         </div>
         <div style="flex:1">
-          <div style="font-size:.8rem;font-weight:500;margin-bottom:4px">${i.nombre}</div>
-          <div style="font-size:.72rem;color:#888;margin-bottom:8px">Talle: ${i.size}</div>
+          <div style="font-size:.8rem;font-weight:500;margin-bottom:2px">${i.nombre}</div>
+          <div style="font-size:.72rem;color:#888;margin-bottom:8px">${i.color?`${i.color} — `:''}Talle ${i.size||'—'}</div>
           <div style="display:flex;justify-content:space-between;align-items:center">
             <div style="display:flex;align-items:center;gap:8px">
               <button onclick="changeQty('${i.key}',-1)" style="width:24px;height:24px;border:1px solid #ddd;border-radius:2px;font-size:.9rem;cursor:pointer">−</button>
@@ -241,19 +312,122 @@ function copiarAlias() {
   showToast('Alias copiado: ' + MP_ALIAS);
 }
 
+let _metodoPedido = '';
+
 function finalizarConMetodo(metodo) {
-  const total = cart.reduce((s, i) => s + i.precio * i.qty, 0);
-  const detalle = cart.map(i => `• ${i.nombre} (talle ${i.size}) x${i.qty} — ${fmt(i.precio * i.qty)}`).join('\n');
-  const metodoTxt = metodo === 'mp' ? `Mercado Pago — alias ${MP_ALIAS}` : 'Efectivo';
-  let msg = `🛍️ *Pedido — Vanesa Lopez Tienda*\n\n${detalle}\n\n*Total: ${fmt(total)}*\n💳 *Método de pago:* ${metodoTxt}`;
-  if (metodo === 'mp') msg += `\n\nEnvío el comprobante de la transferencia por acá.`;
-  const url = `https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(msg)}`;
-  window.open(url, '_blank');
+  _metodoPedido = metodo;
   cerrarCheckout();
-  closeCart();
-  cart = [];
-  updateCartUI();
-  mostrarSuccess('¡Gracias por tu compra!', 'Te vamos a contactar por WhatsApp para confirmar el pedido y coordinar la entrega.');
+  abrirEntrega();
+}
+
+/* ─── ENTREGA ────────────────────────────────────── */
+function abrirEntrega() {
+  document.getElementById('entregaOverlay').classList.add('active');
+}
+function cerrarEntrega() {
+  document.getElementById('entregaOverlay').classList.remove('active');
+}
+document.getElementById('entregaOverlay')?.addEventListener('click', e => {
+  if (e.target===document.getElementById('entregaOverlay')) cerrarEntrega();
+});
+
+function elegirEntrega(tipo) {
+  cerrarEntrega();
+  abrirPedidoForm(tipo);
+}
+
+/* ─── PEDIDO FORM ────────────────────────────────── */
+async function abrirPedidoForm(tipo) {
+  document.getElementById('pTipoEntrega').value = tipo;
+  document.getElementById('pMetodoPago').value = _metodoPedido;
+  document.getElementById('pDireccionWrap').style.display = tipo==='envio' ? '' : 'none';
+  if (tipo==='envio') document.getElementById('pDireccion').required = true;
+  else document.getElementById('pDireccion').required = false;
+  document.getElementById('pedidoFormTitulo').textContent = tipo==='retiro' ? 'Datos para el retiro' : 'Datos para el envío';
+  document.getElementById('pedidoFormSub').textContent = tipo==='retiro'
+    ? 'Completá tus datos y elegí cuándo venís a buscar tu pedido.'
+    : 'Completá tus datos y elegí el horario en que estás en casa para recibir el envío. (+$3.000)';
+  await loadHorariosStore();
+  document.getElementById('pedidoFormOverlay').classList.add('active');
+}
+function cerrarPedidoForm() {
+  document.getElementById('pedidoFormOverlay').classList.remove('active');
+}
+document.getElementById('pedidoFormOverlay')?.addEventListener('click', e => {
+  if (e.target===document.getElementById('pedidoFormOverlay')) cerrarPedidoForm();
+});
+function toggleContactoLabel() {}
+
+async function loadHorariosStore() {
+  try {
+    const res = await fetch(`${SB_URL}/rest/v1/horarios_local?activo=eq.true&order=dia.asc`,
+      {headers:{apikey:SB_KEY,Authorization:`Bearer ${SB_KEY}`}});
+    const horarios = await res.json();
+    const DIAS = ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
+    const sel = document.getElementById('pHorario');
+    if (!horarios.length) {
+      sel.innerHTML = '<option value="">A coordinar por WhatsApp</option>';
+      document.getElementById('pHorarioInfo').textContent = '';
+      return;
+    }
+    sel.innerHTML = '<option value="">Elegí un horario</option>' +
+      horarios.flatMap(h => {
+        const slots = [];
+        let [hA,mA] = h.apertura.split(':').map(Number);
+        const [hC] = h.cierre.split(':').map(Number);
+        while (hA < hC) {
+          slots.push(`${DIAS[h.dia]} ${String(hA).padStart(2,'0')}:${String(mA).padStart(2,'0')} hs`);
+          hA++; mA=0;
+        }
+        return slots;
+      }).map(s=>`<option value="${s}">${s}</option>`).join('');
+    document.getElementById('pHorarioInfo').textContent = '* Horario sujeto a confirmación.';
+  } catch(e) {
+    document.getElementById('pHorario').innerHTML = '<option value="">A coordinar por WhatsApp</option>';
+  }
+}
+
+async function submitPedido(e) {
+  e.preventDefault();
+  const tipo   = document.getElementById('pTipoEntrega').value;
+  const metodo = document.getElementById('pMetodoPago').value;
+  const nombre = document.getElementById('pNombreCliente').value.trim();
+  const tipoC  = document.getElementById('pTipoContacto').value;
+  const contacto = document.getElementById('pContactoCliente').value.trim();
+  const horario= document.getElementById('pHorario').value;
+  const dir    = document.getElementById('pDireccion').value.trim();
+  const total  = cart.reduce((s,i)=>s+i.precio*i.qty,0);
+  const envio  = tipo==='envio' ? 3000 : 0;
+  const items  = cart.map(i=>({nombre:i.nombre,color:i.color||'',talle:i.size||'',cantidad:i.qty,precio:i.precio}));
+  const detalle= cart.map(i=>`• ${i.nombre}${i.color?` (${i.color})`:''}${i.size?` talle ${i.size}`:''} x${i.qty} — ${fmt(i.precio*i.qty)}`).join('\n');
+
+  // guardar pedido en Supabase
+  try {
+    await fetch(`${SB_URL}/rest/v1/pedidos`,{
+      method:'POST',
+      headers:{apikey:SB_KEY,Authorization:`Bearer ${SB_KEY}`,'Content-Type':'application/json'},
+      body:JSON.stringify({items,total:total+envio,metodo_pago:metodo,tipo_entrega:tipo,
+        nombre,contacto,tipo_contacto:tipoC,horario,direccion:dir||null,costo_envio:envio})
+    });
+  } catch(err){ console.warn('Error guardando pedido',err); }
+
+  // mensaje WhatsApp
+  const metodoTxt = metodo==='mp' ? `Mercado Pago — alias *${MP_ALIAS}*` : 'Efectivo';
+  const entregaTxt = tipo==='retiro' ? `🏪 Retiro en el local a las *${horario}*`
+    : `🚚 Envío a domicilio a las *${horario}*${dir?` — ${dir}`:''} (+$3.000)`;
+  let msg = `🛍️ *Pedido — Vanesa Lopez Tienda*\n\n${detalle}\n\n`;
+  msg += `*Subtotal:* ${fmt(total)}${envio?`\n*Envío:* ${fmt(envio)}`:''}`;
+  msg += `\n*Total: ${fmt(total+envio)}*\n💳 *Pago:* ${metodoTxt}\n${entregaTxt}\n`;
+  msg += `\n👤 *Nombre:* ${nombre}\n📱 *Contacto:* ${contacto}`;
+  if (metodo==='mp') msg += `\n\nEnvío el comprobante de la transferencia.`;
+
+  window.open(`https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(msg)}`,'_blank');
+  cerrarPedidoForm(); closeCart();
+  cart=[]; updateCartUI();
+  mostrarSuccess('¡Pedido confirmado!',
+    tipo==='retiro'
+      ? `Genial ${nombre}! Te esperamos en el local a las ${horario}. Te confirmamos por WhatsApp.`
+      : `Genial ${nombre}! Te enviamos el pedido a las ${horario}. Te confirmamos por WhatsApp.`);
 }
 
 /* ─── MODAL ÉXITO ───────────────────────────────── */
@@ -330,6 +504,44 @@ function updateCountdown() {
 }
 setInterval(updateCountdown, 1000);
 updateCountdown();
+
+/* ─── SIN STOCK ──────────────────────────────────── */
+function abrirSinStock(color, talle) {
+  const p = currentProduct;
+  document.getElementById('ssProductoId').value = p?.id || '';
+  document.getElementById('ssColor').value = color;
+  document.getElementById('ssTalle').value = talle;
+  document.getElementById('sinStockMsg').textContent =
+    `"${p?.nombre || 'Este producto'}" en color ${color}, talle ${talle} no está disponible ahora, pero ya le avisamos a Vanesa. Dejanos tu contacto y te avisamos cuando llegue.`;
+  document.getElementById('sinStockForm').reset();
+  document.getElementById('ssProductoId').value = p?.id || '';
+  document.getElementById('ssColor').value = color;
+  document.getElementById('ssTalle').value = talle;
+  document.getElementById('sinStockOverlay').classList.add('active');
+}
+function cerrarSinStock() {
+  document.getElementById('sinStockOverlay').classList.remove('active');
+}
+async function submitSolicitudStock(e) {
+  e.preventDefault();
+  const productoId = parseInt(document.getElementById('ssProductoId').value)||null;
+  const color    = document.getElementById('ssColor').value;
+  const talle    = document.getElementById('ssTalle').value;
+  const nombre   = document.getElementById('ssNombre').value.trim();
+  const tipo     = document.getElementById('ssTipo').value;
+  const contacto = document.getElementById('ssContacto').value.trim();
+  try {
+    await fetch(`${SB_URL}/rest/v1/solicitudes_stock`, {
+      method:'POST',
+      headers:{apikey:SB_KEY,Authorization:`Bearer ${SB_KEY}`,'Content-Type':'application/json'},
+      body:JSON.stringify({producto_id:productoId,producto_nombre:currentProduct?.nombre||'',
+        color,talle,nombre,contacto,tipo_contacto:tipo})
+    });
+  } catch(err){ console.warn('Error guardando solicitud',err); }
+  cerrarSinStock();
+  mostrarSuccess('¡Anotado!',
+    `Gracias ${nombre}! Cuando tengamos "${currentProduct?.nombre}" en ${color} talle ${talle} te avisamos por ${tipo==='whatsapp'?'WhatsApp':'email'}. 💛`);
+}
 
 /* ─── HEADER SCROLL ─────────────────────────────── */
 window.addEventListener('scroll', () => {

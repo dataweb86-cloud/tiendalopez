@@ -666,21 +666,35 @@ footer {
 .modal-price { font-size: 1.4rem; font-weight: 600; }
 .modal-original { font-size: .9rem; color: var(--gray); text-decoration: line-through; }
 .modal-desc { font-size: .82rem; color: var(--gray); line-height: 1.7; margin-bottom: 24px; }
+/* ─── COLOR PICKER ──────────────────────────────── */
+.color-picker { margin-bottom: 20px; }
+.color-picker p { font-size: .7rem; letter-spacing: .12em; text-transform: uppercase; margin-bottom: 10px; font-weight: 500; }
+.colors { display: flex; gap: 8px; flex-wrap: wrap; }
+.color-btn {
+  padding: 6px 14px; border: 2px solid #ddd; border-radius: 20px;
+  font-size: .72rem; font-weight: 500; cursor: pointer; transition: all .15s;
+  background: var(--white);
+}
+.color-btn.active { border-color: var(--dark); background: var(--dark); color: var(--white); }
+.color-btn:hover:not(.active) { border-color: var(--gold); color: var(--gold); }
+
+/* ─── SIZE PICKER ───────────────────────────────── */
 .size-picker { margin-bottom: 24px; }
 .size-picker p { font-size: .7rem; letter-spacing: .12em; text-transform: uppercase; margin-bottom: 10px; font-weight: 500; }
 .sizes { display: flex; gap: 8px; flex-wrap: wrap; }
 .size-btn {
-  width: 44px; height: 44px;
+  min-width: 44px; height: 44px; padding: 0 8px;
   border: 1px solid #ddd;
-  font-size: .75rem;
-  font-weight: 500;
+  font-size: .75rem; font-weight: 500;
   transition: all var(--transition);
   border-radius: var(--radius);
+  position: relative;
 }
-.size-btn.active, .size-btn:hover {
-  border-color: var(--dark);
-  background: var(--dark);
-  color: var(--white);
+.size-btn.active, .size-btn:hover:not(.sin-stock) {
+  border-color: var(--dark); background: var(--dark); color: var(--white);
+}
+.size-btn.sin-stock {
+  opacity: .35; cursor: not-allowed; text-decoration: line-through;
 }
 .modal-actions { display: flex; flex-direction: column; gap: 10px; }
 
