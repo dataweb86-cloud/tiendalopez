@@ -1414,7 +1414,9 @@ async function saveProduct(e) {
   btn.textContent='Guardando...';btn.disabled=true;
   const costo=parseInt(document.getElementById('fCosto').value)||0;
   const precio=parseInt(document.getElementById('fPrecio').value)||0;
-  const body={
+
+  // Campos base — siempre existen en la tabla
+  const bodyBase={
     nombre:document.getElementById('fNombre').value.trim(),
     seccion:document.getElementById('fSeccion').value,
     categoria:document.getElementById('fCategoria').value.trim()||null,
@@ -1433,6 +1435,10 @@ async function saveProduct(e) {
     imagen_url2:document.getElementById('fImagen2').value.trim()||null,
     imagen_url3:document.getElementById('fImagen3').value.trim()||null,
     talles:getTalles()||null,
+  };
+
+  // Campos extra — sólo existen si se ejecutó setup-db-v5.sql
+  const bodyV5={
     genero:document.getElementById('fGenero').value||null,
     temporada:document.getElementById('fTemporada').value||null,
     material:document.getElementById('fMaterial').value.trim()||null,
@@ -1444,19 +1450,29 @@ async function saveProduct(e) {
     es_oferta:document.getElementById('fEsOferta').checked,
     precio_oferta:parseInt(document.getElementById('fPrecioOferta').value)||null,
   };
+
   try{
     if(id){
-      await api(`/rest/v1/productos?id=eq.${id}`,{method:'PATCH',body:JSON.stringify(body)});
+      // Primero guardamos campos base (siempre funciona)
+      await api(`/rest/v1/productos?id=eq.${id}`,{method:'PATCH',body:JSON.stringify(bodyBase)});
+      // Luego campos v5, silencioso si las columnas no existen aún
+      await api(`/rest/v1/productos?id=eq.${id}`,{method:'PATCH',body:JSON.stringify(bodyV5)}).catch(()=>{});
       await saveVariantes(parseInt(id));
       toast('Producto actualizado ✓');
     } else {
-      const created = await api('/rest/v1/productos',{method:'POST',body:JSON.stringify(body)});
+      // Al crear, probamos con todos, si falla intentamos solo base
+      let created;
+      try {
+        created = await api('/rest/v1/productos',{method:'POST',body:JSON.stringify({...bodyBase,...bodyV5})});
+      } catch {
+        created = await api('/rest/v1/productos',{method:'POST',body:JSON.stringify(bodyBase)});
+      }
       const newId = Array.isArray(created) ? created[0]?.id : created?.id;
       if(newId) await saveVariantes(newId);
       toast('Producto creado ✓');
     }
     resetProdForm();showPage('productos');
-  }catch(err){toast('Error: '+err.message,true);}
+  }catch(err){toast('Error al guardar: '+err.message,true);}
   finally{btn.textContent='Guardar producto';btn.disabled=false;}
 }
 
