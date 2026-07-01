@@ -551,7 +551,10 @@ footer {
   line-height: 1.8;
   margin: 16px 0 24px;
 }
-.footer-logo { height: 56px; width: auto; margin-bottom: 0; filter: brightness(0) invert(1); opacity: .8; }
+.footer-logo { height: 64px; width: auto; margin-bottom: 0; filter: brightness(0) invert(1); opacity: 1; }
+.footer-localweb { margin-top:20px; font-size:.68rem; color:rgba(255,255,255,.3); }
+.footer-localweb a { color:var(--gold); text-decoration:none; font-weight:600; }
+.footer-localweb a:hover { color:#fff; }
 .socials { display: flex; gap: 16px; }
 .socials a {
   width: 36px; height: 36px;
