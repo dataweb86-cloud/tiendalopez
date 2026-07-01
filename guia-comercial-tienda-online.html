@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Tienda Online — LocalWeb.ar</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Inter', sans-serif; color: #1a1a1a; background: #fff; font-size: 14px; line-height: 1.6; }
+  .page { max-width: 820px; margin: 0 auto; padding: 0 40px 60px; }
+
+  /* COVER */
+  .cover { background: #1a1a1a; color: #fff; margin: 0 -40px; padding: 64px 80px; margin-bottom: 48px; position: relative; overflow: hidden; }
+  .cover::before { content: ''; position: absolute; top: -60px; right: -60px; width: 300px; height: 300px; border-radius: 50%; background: rgba(184,134,11,0.15); }
+  .cover .tag { font-size: 11px; letter-spacing: 3px; color: #b8860b; text-transform: uppercase; margin-bottom: 16px; }
+  .cover h1 { font-size: 40px; font-weight: 800; line-height: 1.1; margin-bottom: 16px; }
+  .cover h1 span { color: #b8860b; }
+  .cover .lead { font-size: 16px; color: rgba(255,255,255,0.7); max-width: 480px; margin-bottom: 32px; }
+  .cover .pills { display: flex; gap: 10px; flex-wrap: wrap; }
+  .cover .pill { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); border-radius: 20px; padding: 6px 16px; font-size: 12px; color: rgba(255,255,255,0.8); }
+
+  /* SECTIONS */
+  h2 { font-size: 22px; font-weight: 700; color: #1a1a1a; margin: 44px 0 16px; }
+  h2 .accent { color: #b8860b; }
+  h3 { font-size: 15px; font-weight: 600; color: #1a1a1a; margin: 20px 0 8px; }
+  p { color: #444; margin-bottom: 10px; }
+  ul { padding-left: 18px; }
+  li { color: #444; margin-bottom: 7px; }
+
+  /* FEATURE GRID */
+  .features { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 20px 0; }
+  .feat { border: 1px solid #e5e5e5; border-radius: 10px; padding: 18px; }
+  .feat-icon { width: 36px; height: 36px; background: #fffbeb; border-radius: 8px; display: flex; align-items: center; justify-content: center; margin-bottom: 12px; font-size: 18px; }
+  .feat h4 { font-size: 13px; font-weight: 600; margin-bottom: 6px; }
+  .feat p { font-size: 12px; color: #666; margin: 0; }
+
+  /* HIGHLIGHT BOX */
+  .highlight { background: #1a1a1a; color: #fff; border-radius: 12px; padding: 28px 32px; margin: 28px 0; }
+  .highlight h3 { color: #b8860b; margin-top: 0; font-size: 17px; }
+  .highlight p { color: rgba(255,255,255,0.75); margin-bottom: 0; }
+  .highlight ul li { color: rgba(255,255,255,0.75); }
+
+  /* PRICE TABLE */
+  .price-section { background: #fffbeb; border: 1px solid #f0e0a0; border-radius: 12px; padding: 28px 32px; margin: 28px 0; }
+  .price-section h3 { margin-top: 0; color: #b8860b; font-size: 16px; }
+  .price-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #f0e0a0; }
+  .price-row:last-child { border-bottom: none; font-weight: 600; }
+  .price-amount { font-size: 15px; font-weight: 600; color: #b8860b; }
+
+  /* SCREENSHOT MOCKUP */
+  .mockup { background: #f5f5f5; border-radius: 12px; padding: 20px; margin: 20px 0; }
+  .mockup-bar { display: flex; gap: 6px; margin-bottom: 12px; align-items: center; }
+  .dot { width: 10px; height: 10px; border-radius: 50%; }
+  .dot.r { background: #ff5f56; }
+  .dot.y { background: #ffbd2e; }
+  .dot.g { background: #27c93f; }
+  .mockup-url { background: #fff; border-radius: 4px; padding: 3px 12px; font-size: 11px; color: #888; flex: 1; }
+  .mockup-content { background: #1a1a1a; border-radius: 8px; padding: 16px; }
+  .mockup-row { display: flex; gap: 10px; margin-bottom: 10px; }
+  .mockup-card { background: #2a2a2a; border-radius: 6px; flex: 1; padding: 10px; }
+  .mockup-img { height: 60px; background: #3a3a3a; border-radius: 4px; margin-bottom: 8px; }
+  .mockup-title { height: 8px; background: #444; border-radius: 2px; margin-bottom: 5px; width: 70%; }
+  .mockup-price { height: 8px; background: #b8860b; border-radius: 2px; width: 40%; }
+
+  /* STEPS */
+  .steps { margin: 20px 0; }
+  .step { display: flex; gap: 16px; margin-bottom: 18px; align-items: flex-start; }
+  .step-num { width: 32px; height: 32px; background: #b8860b; color: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 13px; flex-shrink: 0; }
+  .step-body h4 { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
+  .step-body p { font-size: 13px; margin: 0; }
+
+  /* COMPARISON */
+  .compare { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 13px; }
+  .compare th { background: #1a1a1a; color: #fff; padding: 10px 14px; text-align: left; }
+  .compare th:last-child { background: #b8860b; }
+  .compare td { padding: 9px 14px; border-bottom: 1px solid #f0f0f0; }
+  .compare tr:nth-child(even) td { background: #fafafa; }
+  .check { color: #22c55e; font-weight: 700; }
+  .cross { color: #ef4444; }
+
+  /* TESTIMONIAL */
+  .testimonial { border-left: 3px solid #b8860b; padding: 14px 20px; margin: 20px 0; background: #fffbeb; border-radius: 0 8px 8px 0; }
+  .testimonial p { font-style: italic; color: #555; margin-bottom: 8px; }
+  .testimonial .author { font-size: 12px; font-weight: 600; color: #b8860b; }
+
+  /* CTA */
+  .cta { background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%); color: #fff; border-radius: 12px; padding: 36px; margin: 36px 0; text-align: center; }
+  .cta h3 { color: #b8860b; font-size: 20px; margin-bottom: 10px; }
+  .cta p { color: rgba(255,255,255,0.7); margin-bottom: 20px; }
+  .cta .btn { display: inline-block; background: #b8860b; color: #fff; padding: 12px 32px; border-radius: 8px; font-weight: 600; font-size: 14px; text-decoration: none; margin: 4px; }
+  .cta .btn.ghost { background: transparent; border: 1px solid rgba(255,255,255,0.3); }
+
+  /* FOOTER */
+  .footer-doc { text-align: center; margin-top: 48px; padding-top: 24px; border-top: 1px solid #e5e5e5; }
+  .footer-doc .logo { font-size: 20px; font-weight: 800; color: #1a1a1a; margin-bottom: 6px; }
+  .footer-doc .logo span { color: #b8860b; }
+  .footer-doc p { font-size: 12px; color: #999; }
+
+  @media print {
+    .cover { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .highlight, .cta { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .page { padding: 0 30px 40px; }
+    h2 { page-break-before: auto; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- COVER -->
+  <div class="cover">
+    <div class="tag">LocalWeb.ar · Propuesta comercial</div>
+    <h1>Tu negocio,<br><span>online en 48 hs</span></h1>
+    <p class="lead">Tienda online completa para comercios locales. Vendé las 24 horas, gestioná tus productos y cobrá sin salir del local.</p>
+    <div class="pills">
+      <span class="pill">Sin mensualidades</span>
+      <span class="pill">Sin comisiones</span>
+      <span class="pill">100% tuyo</span>
+      <span class="pill">Pago único</span>
+    </div>
+  </div>
+
+  <!-- QUÉ ES -->
+  <h2>¿Qué es una <span class="accent">tienda online</span> con LocalWeb?</h2>
+  <p>Es tu catálogo de productos publicado en internet, disponible las 24 horas, donde tus clientes pueden ver lo que tenés, elegir talles y colores, y hacer su pedido con un solo clic.</p>
+  <p>No es solo una página bonita. Es una herramienta de trabajo: cada pedido llega directo a tu WhatsApp, podés controlarlo desde el celular, y el sistema descuenta el stock solo.</p>
+
+  <!-- MOCKUP -->
+  <div class="mockup">
+    <div class="mockup-bar">
+      <div class="dot r"></div><div class="dot y"></div><div class="dot g"></div>
+      <div class="mockup-url">tunegocio.vercel.app</div>
+    </div>
+    <div class="mockup-content">
+      <div style="background:#2a2a2a;border-radius:4px;padding:8px 12px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center">
+        <div style="color:#b8860b;font-size:11px;font-weight:700">TU TIENDA</div>
+        <div style="display:flex;gap:8px">
+          <div style="width:40px;height:6px;background:#3a3a3a;border-radius:2px"></div>
+          <div style="width:40px;height:6px;background:#3a3a3a;border-radius:2px"></div>
+          <div style="width:40px;height:6px;background:#3a3a3a;border-radius:2px"></div>
+        </div>
+      </div>
+      <div class="mockup-row">
+        <div class="mockup-card"><div class="mockup-img"></div><div class="mockup-title"></div><div class="mockup-price"></div></div>
+        <div class="mockup-card"><div class="mockup-img"></div><div class="mockup-title"></div><div class="mockup-price"></div></div>
+        <div class="mockup-card"><div class="mockup-img"></div><div class="mockup-title"></div><div class="mockup-price"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FUNCIONALIDADES -->
+  <h2>Todo lo que <span class="accent">incluye</span></h2>
+  <div class="features">
+    <div class="feat">
+      <div class="feat-icon">🛍️</div>
+      <h4>Catálogo de productos</h4>
+      <p>Cargás tus productos con fotos, descripciones, precios y stock. Se actualiza en tiempo real.</p>
+    </div>
+    <div class="feat">
+      <div class="feat-icon">📦</div>
+      <h4>Gestión de talles y colores</h4>
+      <p>Variantes por talle (numérico, por letra) y por color. Stock individual por combinación.</p>
+    </div>
+    <div class="feat">
+      <div class="feat-icon">📱</div>
+      <h4>Pedidos por WhatsApp</h4>
+      <p>Cada compra llega a tu WhatsApp con el detalle completo del pedido y los datos del cliente.</p>
+    </div>
+    <div class="feat">
+      <div class="feat-icon">💳</div>
+      <h4>Múltiples formas de pago</h4>
+      <p>Efectivo, MercadoPago o transferencia. El cliente elige al momento de comprar.</p>
+    </div>
+    <div class="feat">
+      <div class="feat-icon">🗺️</div>
+      <h4>Mapa de retiro automático</h4>
+      <p>Si el cliente retira en el local, recibe el mapa y puede iniciar el viaje desde su celular.</p>
+    </div>
+    <div class="feat">
+      <div class="feat-icon">🎁</div>
+      <h4>Descuentos para clientes</h4>
+      <p>Los clientes registrados reciben un % de descuento automático en todos sus pedidos.</p>
+    </div>
+    <div class="feat">
+      <div class="feat-icon">📊</div>
+      <h4>Panel de administración</h4>
+      <p>Controlás todo desde tu celular: productos, pedidos, clientes y configuración.</p>
+    </div>
+    <div class="feat">
+      <div class="feat-icon">📢</div>
+      <h4>Barra de anuncios</h4>
+      <p>Mostrás promociones, novedades o mensajes importantes en la parte superior de la tienda.</p>
+    </div>
+  </div>
+
+  <!-- VS COMPETENCIA -->
+  <h2>¿Por qué <span class="accent">LocalWeb</span> y no otras opciones?</h2>
+  <table class="compare">
+    <tr>
+      <th>Función</th>
+      <th>Tiendanube / Wix</th>
+      <th>LocalWeb.ar</th>
+    </tr>
+    <tr><td>Pago mensual</td><td class="cross">Sí (desde $8.000/mes)</td><td class="check">No — pago único</td></tr>
+    <tr><td>Comisión por venta</td><td class="cross">Sí (hasta 2%)</td><td class="check">Cero comisiones</td></tr>
+    <tr><td>Diseño personalizado</td><td class="cross">Limitado a plantillas</td><td class="check">100% a tu medida</td></tr>
+    <tr><td>Talles y colores</td><td class="check">Sí</td><td class="check">Sí, con stock individual</td></tr>
+    <tr><td>Pedidos por WhatsApp</td><td class="cross">No</td><td class="check">Sí, directo</td></tr>
+    <tr><td>Mapa de retiro</td><td class="cross">No</td><td class="check">Sí, automático</td></tr>
+    <tr><td>Soporte local</td><td class="cross">Chat en inglés</td><td class="check">WhatsApp en español</td></tr>
+  </table>
+
+  <!-- CÓMO FUNCIONA -->
+  <h2>¿Cómo <span class="accent">funciona</span> el proceso?</h2>
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-body">
+        <h4>Reunión inicial</h4>
+        <p>Charlamos sobre tu negocio, tus productos, colores y lo que necesitás que haga la tienda.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-body">
+        <h4>Diseño y configuración</h4>
+        <p>Armamos la tienda con tu logo, colores y productos. Vos nos mandás las fotos y los precios.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-body">
+        <h4>Revisión y ajustes</h4>
+        <p>Te mostramos la tienda terminada y hacemos todos los ajustes que pidas antes de publicar.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">4</div>
+      <div class="step-body">
+        <h4>¡Tu tienda online!</h4>
+        <p>Publicamos la tienda, te damos acceso al panel y te enseñamos a usarlo en 30 minutos.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- HIGHLIGHT -->
+  <div class="highlight">
+    <h3>El cliente compra. Vos cobrás. Así de simple.</h3>
+    <ul>
+      <li>El cliente entra a tu tienda desde el celular o la computadora</li>
+      <li>Elige el producto, el talle y el color</li>
+      <li>Elige cómo pagar y si retira o quiere envío</li>
+      <li>Te llega un WhatsApp con el pedido completo</li>
+      <li>Vos confirmás, preparás y listo</li>
+    </ul>
+  </div>
+
+  <!-- PARA QUÉ RUBROS -->
+  <h2>¿Para qué tipo de <span class="accent">negocios</span>?</h2>
+  <div class="features">
+    <div class="feat"><div class="feat-icon">👗</div><h4>Indumentaria y calzado</h4><p>Talles, colores, fotos de look. Ideal para boutiques y ropa deportiva.</p></div>
+    <div class="feat"><div class="feat-icon">🧴</div><h4>Cosmética y perfumería</h4><p>Catálogo por marca, precio tachado, stock en tiempo real.</p></div>
+    <div class="feat"><div class="feat-icon">🍕</div><h4>Gastronomía y delivery</h4><p>Menú digital, pedidos por WhatsApp, retiro o envío.</p></div>
+    <div class="feat"><div class="feat-icon">🌿</div><h4>Dietética y naturales</h4><p>Productos por categoría, descripción detallada, carrito de compras.</p></div>
+  </div>
+
+  <!-- PRECIO -->
+  <div class="price-section">
+    <h3>Inversión</h3>
+    <div class="price-row">
+      <span>Diseño y desarrollo de la tienda</span>
+      <span class="price-amount">A consultar</span>
+    </div>
+    <div class="price-row">
+      <span>Carga inicial de productos (hasta 30)</span>
+      <span class="price-amount">Incluido</span>
+    </div>
+    <div class="price-row">
+      <span>Capacitación para usar el panel</span>
+      <span class="price-amount">Incluido</span>
+    </div>
+    <div class="price-row">
+      <span>Hosting y dominio (primer año)</span>
+      <span class="price-amount">Incluido</span>
+    </div>
+    <div class="price-row">
+      <span>Mantenimiento mensual</span>
+      <span class="price-amount">Opcional</span>
+    </div>
+    <div class="price-row">
+      <span><strong>Comisión por venta</strong></span>
+      <span class="price-amount" style="color:#22c55e">$0 — Cero</span>
+    </div>
+  </div>
+
+  <!-- TESTIMONIO -->
+  <div class="testimonial">
+    <p>"Antes me escribían por Instagram y se perdían los pedidos. Ahora todo llega al WhatsApp ordenado y mis clientas pueden ver el stock actualizado. En la primera semana ya recuperé lo invertido."</p>
+    <div class="author">Vanesa L. — Indumentaria femenina, Santa Rosa, La Pampa</div>
+  </div>
+
+  <!-- CTA -->
+  <div class="cta">
+    <h3>¿Querés tu tienda online?</h3>
+    <p>Hablemos sin compromiso. En 10 minutos te contamos cómo podemos ayudarte.</p>
+    <a href="https://wa.me/5492954589194" class="btn">Escribinos por WhatsApp</a>
+    <a href="https://www.localweb.ar" class="btn ghost">Ver más en LocalWeb.ar</a>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="footer-doc">
+    <div class="logo">Local<span>Web</span>.ar</div>
+    <p>Diseño y desarrollo web para negocios locales · Santa Rosa, La Pampa · www.localweb.ar</p>
+  </div>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Guía de Uso — Tienda Vanesa Lopez</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Inter', sans-serif; color: #1a1a1a; background: #fff; font-size: 14px; line-height: 1.6; }
+  .page { max-width: 800px; margin: 0 auto; padding: 48px 40px; }
+  .cover { text-align: center; padding: 60px 0 48px; border-bottom: 3px solid #b8860b; margin-bottom: 40px; }
+  .cover .logo-text { font-size: 11px; letter-spacing: 3px; color: #b8860b; text-transform: uppercase; margin-bottom: 12px; }
+  .cover h1 { font-size: 32px; font-weight: 700; color: #1a1a1a; margin-bottom: 8px; }
+  .cover .subtitle { font-size: 16px; color: #555; margin-bottom: 24px; }
+  .cover .badge { display: inline-block; background: #b8860b; color: #fff; padding: 6px 20px; border-radius: 20px; font-size: 12px; font-weight: 600; }
+  h2 { font-size: 18px; font-weight: 700; color: #b8860b; margin: 36px 0 12px; padding-bottom: 6px; border-bottom: 1.5px solid #f0e0a0; display: flex; align-items: center; gap: 8px; }
+  h3 { font-size: 14px; font-weight: 600; color: #1a1a1a; margin: 20px 0 8px; }
+  p { margin-bottom: 10px; color: #333; }
+  ul, ol { padding-left: 20px; margin-bottom: 12px; }
+  li { margin-bottom: 6px; color: #333; }
+  .step-box { background: #fffbeb; border: 1px solid #f0e0a0; border-radius: 8px; padding: 14px 18px; margin-bottom: 12px; }
+  .step-box strong { color: #b8860b; }
+  .tip { background: #f0fdf4; border-left: 3px solid #22c55e; padding: 10px 14px; border-radius: 0 6px 6px 0; margin: 12px 0; font-size: 13px; color: #15803d; }
+  .warning { background: #fef9c3; border-left: 3px solid #ca8a04; padding: 10px 14px; border-radius: 0 6px 6px 0; margin: 12px 0; font-size: 13px; color: #713f12; }
+  .section { margin-bottom: 8px; }
+  .num { display: inline-flex; align-items: center; justify-content: center; width: 24px; height: 24px; background: #b8860b; color: #fff; border-radius: 50%; font-size: 12px; font-weight: 700; flex-shrink: 0; }
+  .step-row { display: flex; gap: 12px; align-items: flex-start; margin-bottom: 10px; }
+  .step-row .content { flex: 1; }
+  table { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 13px; }
+  th { background: #b8860b; color: #fff; padding: 8px 12px; text-align: left; }
+  td { padding: 8px 12px; border-bottom: 1px solid #f0e0a0; }
+  tr:nth-child(even) td { background: #fffbeb; }
+  .footer-doc { margin-top: 48px; padding-top: 20px; border-top: 1px solid #ddd; text-align: center; font-size: 11px; color: #999; }
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 12px; }
+  .card-mini { background: #fafafa; border: 1px solid #e5e5e5; border-radius: 8px; padding: 14px; }
+  .card-mini h4 { font-size: 13px; font-weight: 600; color: #b8860b; margin-bottom: 8px; }
+  @media print {
+    body { font-size: 12px; }
+    .page { padding: 30px 30px; }
+    h2 { page-break-before: auto; }
+    .step-box, .tip, .warning { break-inside: avoid; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="cover">
+    <div class="logo-text">LocalWeb.ar</div>
+    <h1>Guía de Uso</h1>
+    <div class="subtitle">Tienda Online — Vanesa Lopez Indumentaria</div>
+    <div class="badge">Panel de Administración</div>
+  </div>
+
+  <!-- ACCESO ADMIN -->
+  <h2><span>1</span> Cómo acceder al panel de administración</h2>
+  <p>Entrá a tu tienda online y agregá <strong>/admin.html</strong> al final de la dirección:</p>
+  <div class="step-box">
+    <strong>URL de tu admin:</strong> https://tiendalopez.vercel.app/admin.html
+  </div>
+  <div class="step-row">
+    <div class="content">
+      <strong>Usuario:</strong> admin<br>
+      <strong>Contraseña:</strong> Vane123
+    </div>
+  </div>
+  <div class="warning">Guardá esta dirección en favoritos. No la compartas con nadie.</div>
+
+  <!-- PRODUCTOS -->
+  <h2><span>2</span> Gestión de productos</h2>
+
+  <h3>Agregar un producto nuevo</h3>
+  <div class="step-row"><div class="num">1</div><div class="content">En el panel, hacé clic en <strong>Productos</strong> y luego en <strong>+ Nuevo Producto</strong>.</div></div>
+  <div class="step-row"><div class="num">2</div><div class="content">Completá el nombre, descripción, precio y precio original (tachado).</div></div>
+  <div class="step-row"><div class="num">3</div><div class="content">Elegí la categoría: Nuevos Ingresos, Promociones, Ofertas o Liquidación.</div></div>
+  <div class="step-row"><div class="num">4</div><div class="content">Subí la foto del producto (recomendado: fondo blanco, formato cuadrado).</div></div>
+  <div class="step-row"><div class="num">5</div><div class="content">En la sección <strong>Talles y Stock</strong>, seleccioná los talles disponibles y poneles el stock a cada uno.</div></div>
+  <div class="step-row"><div class="num">6</div><div class="content">Hacé clic en <strong>Guardar</strong>.</div></div>
+
+  <h3>Editar un producto existente</h3>
+  <div class="step-box">
+    Buscá el producto en la lista → clic en el lápiz (editar) → modificá lo que necesitás → <strong>Guardar</strong>.
+  </div>
+
+  <h3>Configurar talles y colores</h3>
+  <p>Podés manejar tres tipos de talles:</p>
+  <div class="two-col">
+    <div class="card-mini">
+      <h4>Numérico chico</h4>
+      Talles 1 al 9 (ropa de niños o prendas pequeñas)
+    </div>
+    <div class="card-mini">
+      <h4>Por letra</h4>
+      XS, S, M, L, XL, XXL, Único
+    </div>
+  </div>
+  <div class="card-mini" style="margin-bottom:12px">
+    <h4>Numérico adulto</h4>
+    Talles 36 al 52 (pantalones, calzado, ropa adulto)
+  </div>
+  <p>Marcá los talles disponibles con el tilde ✓ y después ingresá el stock de cada uno. Si un talle llega a 0, se muestra como <em>Sin stock</em> en la tienda.</p>
+  <div class="tip">Si agregás un color nuevo, primero guardá el producto y después volvé a editarlo para que aparezca la grilla de stock.</div>
+
+  <!-- PEDIDOS -->
+  <h2><span>3</span> Gestión de pedidos</h2>
+  <p>Cada vez que alguien compra, te llega un mensaje de WhatsApp y el pedido aparece en el panel.</p>
+
+  <h3>Estados de un pedido</h3>
+  <table>
+    <tr><th>Estado</th><th>Qué significa</th></tr>
+    <tr><td><strong>Pendiente</strong></td><td>El cliente hizo el pedido, todavía no lo revisaste</td></tr>
+    <tr><td><strong>Aceptado</strong></td><td>Confirmaste el pedido, lo estás preparando</td></tr>
+    <tr><td><strong>Cobrado</strong></td><td>El pago fue recibido y el stock se descontó automáticamente</td></tr>
+    <tr><td><strong>Rechazado</strong></td><td>No podés procesar el pedido (sin stock, pago no recibido, etc.)</td></tr>
+  </table>
+
+  <h3>Marcar un pedido como cobrado</h3>
+  <div class="step-row"><div class="num">1</div><div class="content">Buscá el pedido en la lista → clic en <strong>Ver detalle</strong>.</div></div>
+  <div class="step-row"><div class="num">2</div><div class="content">Verificá que recibiste el pago (transferencia, MercadoPago alias: <strong>mpvanelopez</strong>).</div></div>
+  <div class="step-row"><div class="num">3</div><div class="content">Hacé clic en <strong>Cobrar</strong>. El sistema descuenta el stock automáticamente.</div></div>
+  <div class="tip">Si el cliente eligió retiro en el local, recibirá automáticamente el mapa con la dirección: Pedro Zanni 1043, Barrio Aeropuerto, Santa Rosa.</div>
+
+  <!-- CLIENTES -->
+  <h2><span>4</span> Clientes registrados</h2>
+  <p>Los clientes que se registran en la tienda aparecen en la sección <strong>Clientes</strong>.</p>
+  <div class="two-col">
+    <div class="card-mini">
+      <h4>Enviar WhatsApp</h4>
+      Hacé clic en el botón de WhatsApp del cliente para contactarlo directamente con su número.
+    </div>
+    <div class="card-mini">
+      <h4>Cambiar descuento</h4>
+      Podés asignarle un % de descuento personalizado a cada cliente (distinto al global).
+    </div>
+  </div>
+
+  <h3>Descuento global para clientes registrados</h3>
+  <p>Todos los clientes registrados reciben el mismo porcentaje de descuento. Para cambiarlo:</p>
+  <div class="step-box">
+    Panel → <strong>Configuración</strong> → <strong>Descuento clientes (%)</strong> → ingresá el número → <strong>Guardar</strong>
+  </div>
+
+  <!-- ANUNCIO BAR -->
+  <h2><span>5</span> Barra de anuncios</h2>
+  <p>Es el texto que se mueve en la parte superior de tu tienda. Podés cambiarlo cuando quieras.</p>
+  <div class="step-box">
+    Panel → <strong>Configuración</strong> → <strong>Texto del anuncio</strong> → escribí lo que querés mostrar → <strong>Guardar</strong>
+  </div>
+  <div class="tip">Ejemplos: "ENVÍO GRATIS en compras mayores a $50.000" · "NUEVA COLECCIÓN disponible" · "OFERTA DE VERANO — 20% OFF en toda la tienda"</div>
+
+  <!-- FORMAS DE PAGO Y ENTREGA -->
+  <h2><span>6</span> Formas de pago y entrega</h2>
+  <p>Tu tienda acepta automáticamente dos formas de entrega que el cliente elige al comprar:</p>
+  <div class="two-col">
+    <div class="card-mini">
+      <h4>Envío a domicilio</h4>
+      El cliente ingresa su dirección y coordina el envío con vos por WhatsApp.
+    </div>
+    <div class="card-mini">
+      <h4>Retiro en el local</h4>
+      El cliente recibe el mapa automáticamente: Pedro Zanni 1043, Barrio Aeropuerto.
+    </div>
+  </div>
+  <p>Las formas de pago disponibles son <strong>Efectivo</strong> y <strong>MercadoPago</strong> (alias: <em>mpvanelopez</em>).</p>
+
+  <!-- FOTOS -->
+  <h2><span>7</span> Consejos para las fotos</h2>
+  <ul>
+    <li>Usá fondo blanco o neutro para que los productos se vean mejor.</li>
+    <li>Formato cuadrado (1:1) o vertical (3:4) funcionan mejor en la tienda.</li>
+    <li>Subí fotos de buena resolución (mínimo 800×800 px).</li>
+    <li>Podés subir varias fotos por producto usando los colores como categorías.</li>
+    <li>Antes de subir, comprimí las imágenes en <a href="https://squoosh.app" target="_blank">squoosh.app</a> para que carguen rápido.</li>
+  </ul>
+
+  <!-- CONTACTO SOPORTE -->
+  <h2><span>8</span> Soporte técnico</h2>
+  <div class="step-box">
+    <strong>LocalWeb.ar</strong> — <a href="https://www.localweb.ar">www.localweb.ar</a><br>
+    Para cualquier problema con la tienda, contactanos por WhatsApp o por la web.
+  </div>
+
+  <div class="footer-doc">
+    Creado por LocalWeb.ar · Tienda Vanesa Lopez Indumentaria · 2025
+  </div>
+
+</div>
+</body>
+</html>
