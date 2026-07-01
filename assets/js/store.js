@@ -124,18 +124,21 @@ function openModal(id) {
     const el = document.getElementById('modalNcPct');
     if (el) el.textContent = globalDescuentoPct;
   }
-  const img = document.getElementById('modalImg');
+  const imgWrap = document.getElementById('modalImg');
   const thumbs = document.getElementById('modalThumbs');
   const images = [p.imagen_url, p.imagen_url2, p.imagen_url3].filter(Boolean);
   if (images.length) {
-    img.innerHTML = `<img src="${images[0]}" alt="${p.nombre}" style="width:100%;height:100%;object-fit:contain;background:#f5f5f5" />`;
+    // quitar estilos de placeholder oscuro
+    imgWrap.style.background = '#f5f5f5';
+    imgWrap.style.height = '';
+    imgWrap.innerHTML = `<img src="${images[0]}" alt="${p.nombre}" style="width:100%;height:100%;object-fit:contain;max-height:480px;display:block" />`;
   } else {
-    img.style.background = COLORS[id % COLORS.length];
-    img.style.height = '400px';
-    img.style.display = 'flex';
-    img.style.alignItems = 'center';
-    img.style.justifyContent = 'center';
-    img.innerHTML = `<span style="color:rgba(255,255,255,.3);font-size:.7rem;letter-spacing:.1em;font-family:var(--font-sans)">${p.categoria || ''}</span>`;
+    imgWrap.style.background = COLORS[id % COLORS.length];
+    imgWrap.style.height = '400px';
+    imgWrap.style.display = 'flex';
+    imgWrap.style.alignItems = 'center';
+    imgWrap.style.justifyContent = 'center';
+    imgWrap.innerHTML = `<span style="color:rgba(255,255,255,.3);font-size:.7rem;letter-spacing:.1em;font-family:var(--font-sans)">${p.categoria || ''}</span>`;
   }
   if (images.length > 1) {
     thumbs.style.display = '';
