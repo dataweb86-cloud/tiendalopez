@@ -29,6 +29,7 @@
         <img src="assets/img/logo.png" alt="Vanesa Lopez Tienda" />
       </a>
       <nav class="main-nav" id="mainNav">
+        <a href="#catalogo">Catálogo</a>
         <a href="#nuevos">Nuevos Ingresos</a>
         <a href="#promociones">Promociones</a>
         <a href="#ofertas">Ofertas</a>
@@ -82,6 +83,189 @@
         <div class="cat-icon">🔥</div>
         <span>Liquidación</span>
       </a>
+    </div>
+  </section>
+
+  <!-- ════ CATÁLOGO CON FILTROS ════ -->
+  <section class="catalogo-section" id="catalogo">
+    <div class="catalogo-wrap">
+
+      <!-- Overlay para móvil -->
+      <div class="filter-overlay" id="filterOverlay" onclick="cerrarFiltros()"></div>
+
+      <!-- ── SIDEBAR DE FILTROS ── -->
+      <aside class="filter-sidebar" id="filterSidebar">
+        <div class="filter-sidebar-head">
+          <span>Filtros</span>
+          <button class="filter-clear-all" onclick="limpiarFiltros()">Limpiar todo</button>
+          <button class="filter-close-btn" onclick="cerrarFiltros()">✕</button>
+        </div>
+
+        <!-- Buscar -->
+        <div class="filter-section open">
+          <div class="filter-section-body">
+            <div class="filter-search-wrap">
+              <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.35-4.35"/></svg>
+              <input type="text" id="filterBusqueda" placeholder="Buscar..." oninput="renderCatalog()" />
+            </div>
+          </div>
+        </div>
+
+        <!-- Género -->
+        <div class="filter-section">
+          <button class="filter-section-title" onclick="toggleFilterSection(this)">Género <span class="fs-arrow">▾</span></button>
+          <div class="filter-section-body">
+            <label class="filter-check"><input type="checkbox" data-filter="genero" value="Mujer" onchange="renderCatalog()" /> Mujer</label>
+            <label class="filter-check"><input type="checkbox" data-filter="genero" value="Hombre" onchange="renderCatalog()" /> Hombre</label>
+            <label class="filter-check"><input type="checkbox" data-filter="genero" value="Unisex" onchange="renderCatalog()" /> Unisex</label>
+            <label class="filter-check"><input type="checkbox" data-filter="genero" value="Niños" onchange="renderCatalog()" /> Niños</label>
+            <label class="filter-check"><input type="checkbox" data-filter="genero" value="Bebés" onchange="renderCatalog()" /> Bebés</label>
+          </div>
+        </div>
+
+        <!-- Categoría -->
+        <div class="filter-section">
+          <button class="filter-section-title" onclick="toggleFilterSection(this)">Categoría <span class="fs-arrow">▾</span></button>
+          <div class="filter-section-body">
+            <select class="filter-select" id="filterCategoria" onchange="renderCatalog()">
+              <option value="">Todas</option>
+              <optgroup label="👕 Parte Superior"><option>Remeras</option><option>Musculosas</option><option>Chombas</option><option>Camisas</option><option>Blusas</option><option>Tops</option><option>Crop Tops</option><option>Bodies</option><option>Poleras</option><option>Sweaters</option><option>Pulóveres</option><option>Cardigans</option><option>Chalecos</option><option>Camperas</option><option>Buzos</option><option>Buzos con capucha</option><option>Hoodies</option><option>Canguros</option><option>Sacos</option><option>Blazers</option><option>Tapados</option><option>Trench</option><option>Ponchos</option><option>Capas</option><option>Parkas</option><option>Rompevientos</option><option>Pilotos</option><option>Impermeables</option></optgroup>
+              <optgroup label="👖 Parte Inferior"><option>Jeans</option><option>Pantalones</option><option>Pantalones de vestir</option><option>Pantalones cargo</option><option>Joggers</option><option>Babuchas</option><option>Calzas</option><option>Leggings</option><option>Shorts</option><option>Bermudas</option><option>Polleras</option><option>Minifaldas</option><option>Faldas largas</option><option>Faldas plisadas</option><option>Culottes</option><option>Palazzo</option></optgroup>
+              <optgroup label="👗 Vestidos y Enteritos"><option>Vestidos cortos</option><option>Vestidos largos</option><option>Vestidos de fiesta</option><option>Vestidos casuales</option><option>Vestidos de noche</option><option>Vestidos de verano</option><option>Vestidos tejidos</option><option>Jardineros</option><option>Monos</option><option>Enteritos</option><option>Mamelucos</option></optgroup>
+              <optgroup label="🏋️ Deportiva"><option>Conjuntos deportivos</option><option>Remeras deportivas</option><option>Calzas deportivas</option><option>Shorts deportivos</option><option>Buzos deportivos</option><option>Camperas deportivas</option><option>Pantalones deportivos</option><option>Musculosas deportivas</option></optgroup>
+              <optgroup label="🩱 Playa"><option>Mallas enterizas</option><option>Bikinis</option><option>Tankinis</option><option>Shorts de baño</option><option>Bermudas de baño</option><option>Pareos</option><option>Salidas de playa</option><option>Túnicas</option></optgroup>
+              <optgroup label="👙 Ropa Interior"><option>Corpiños</option><option>Soutiens</option><option>Bombachas</option><option>Tangas</option><option>Boxer</option><option>Slips</option><option>Camisetas interiores</option><option>Fajas</option><option>Medias</option></optgroup>
+              <optgroup label="😴 Dormir"><option>Pijamas</option><option>Camisones</option><option>Batas</option><option>Pantuflas</option><option>Conjuntos de descanso</option></optgroup>
+              <optgroup label="👶 Bebés"><option>Bodys bebé</option><option>Ranitas</option><option>Enteritos bebé</option><option>Pijamas bebé</option><option>Conjuntos bebé</option><option>Baberos</option><option>Gorritos</option></optgroup>
+              <optgroup label="👧 Niños"><option>Remeras niños</option><option>Camisas niños</option><option>Buzos niños</option><option>Camperas niños</option><option>Pantalones niños</option><option>Jeans niños</option><option>Shorts niños</option><option>Vestidos niños</option><option>Polleras niños</option><option>Calzas niños</option><option>Conjuntos niños</option><option>Uniformes escolares</option></optgroup>
+              <optgroup label="👨 Hombre"><option>Remeras hombre</option><option>Camisas hombre</option><option>Chombas hombre</option><option>Musculosas hombre</option><option>Buzos hombre</option><option>Camperas hombre</option><option>Sacos hombre</option><option>Blazers hombre</option><option>Sweaters hombre</option><option>Jeans hombre</option><option>Pantalones hombre</option><option>Bermudas hombre</option><option>Shorts hombre</option><option>Joggers hombre</option><option>Ropa interior hombre</option><option>Pijamas hombre</option></optgroup>
+              <optgroup label="👩 Mujer"><option>Remeras mujer</option><option>Blusas mujer</option><option>Tops mujer</option><option>Bodies mujer</option><option>Sweaters mujer</option><option>Cardigans mujer</option><option>Buzos mujer</option><option>Camperas mujer</option><option>Sacos mujer</option><option>Blazers mujer</option><option>Tapados mujer</option><option>Vestidos mujer</option><option>Polleras mujer</option><option>Jeans mujer</option><option>Pantalones mujer</option><option>Calzas mujer</option><option>Shorts mujer</option><option>Monos mujer</option><option>Enteritos mujer</option></optgroup>
+              <optgroup label="👟 Calzado"><option>Zapatillas</option><option>Zapatos</option><option>Botas</option><option>Botinetas</option><option>Sandalias</option><option>Ojotas</option><option>Alpargatas</option><option>Mocasines</option><option>Borcegos</option><option>Suecos</option><option>Tacos</option></optgroup>
+              <optgroup label="👜 Accesorios"><option>Carteras</option><option>Mochilas</option><option>Billeteras</option><option>Riñoneras</option><option>Cinturones</option><option>Bufandas</option><option>Pañuelos</option><option>Guantes</option><option>Gorros</option><option>Gorras</option><option>Sombreros</option><option>Vinchas</option><option>Hebillas</option><option>Scrunchies</option><option>Anteojos</option><option>Lentes de sol</option><option>Bijouterie</option><option>Collares</option><option>Pulseras</option><option>Aros</option><option>Anillos</option><option>Relojes</option></optgroup>
+              <optgroup label="💍 Moda Fiesta"><option>Vestidos de fiesta</option><option>Trajes</option><option>Blazers de fiesta</option><option>Camisas de vestir</option><option>Corbatas</option><option>Moños</option><option>Chalinas</option></optgroup>
+              <optgroup label="👔 Sastrería"><option>Trajes sastre</option><option>Sacos sastre</option><option>Blazers sastre</option><option>Chalecos sastre</option><option>Pantalones de vestir</option></optgroup>
+              <optgroup label="🧶 Tejidos"><option>Sweaters tejidos</option><option>Cardigans tejidos</option><option>Ponchos tejidos</option><option>Chalecos tejidos</option><option>Bufandas tejidas</option><option>Gorros tejidos</option></optgroup>
+              <optgroup label="🛍️ Colecciones"><option>Nueva Temporada</option><option>Nuevos Ingresos</option><option>Tendencias</option><option>Liquidación</option><option>Últimas Unidades</option><option>Outlet</option><option>Edición Limitada</option></optgroup>
+            </select>
+          </div>
+        </div>
+
+        <!-- Talle (dinámico) -->
+        <div class="filter-section">
+          <button class="filter-section-title" onclick="toggleFilterSection(this)">Talle <span class="fs-arrow">▾</span></button>
+          <div class="filter-section-body" id="filterTallesWrap">
+            <span class="filter-empty-hint">Cargando...</span>
+          </div>
+        </div>
+
+        <!-- Color (dinámico) -->
+        <div class="filter-section">
+          <button class="filter-section-title" onclick="toggleFilterSection(this)">Color <span class="fs-arrow">▾</span></button>
+          <div class="filter-section-body" id="filterColoresWrap">
+            <span class="filter-empty-hint">Cargando...</span>
+          </div>
+        </div>
+
+        <!-- Precio -->
+        <div class="filter-section">
+          <button class="filter-section-title" onclick="toggleFilterSection(this)">Precio <span class="fs-arrow">▾</span></button>
+          <div class="filter-section-body">
+            <div class="filter-range-wrap">
+              <input type="number" id="filterPrecioMin" placeholder="Mín $" oninput="renderCatalog()" />
+              <span class="filter-range-sep">—</span>
+              <input type="number" id="filterPrecioMax" placeholder="Máx $" oninput="renderCatalog()" />
+            </div>
+          </div>
+        </div>
+
+        <!-- Temporada -->
+        <div class="filter-section">
+          <button class="filter-section-title" onclick="toggleFilterSection(this)">Temporada <span class="fs-arrow">▾</span></button>
+          <div class="filter-section-body">
+            <label class="filter-check"><input type="checkbox" data-filter="temporada" value="Verano" onchange="renderCatalog()" /> ☀️ Verano</label>
+            <label class="filter-check"><input type="checkbox" data-filter="temporada" value="Otoño/Invierno" onchange="renderCatalog()" /> 🍂 Otoño / Invierno</label>
+            <label class="filter-check"><input type="checkbox" data-filter="temporada" value="Primavera/Verano" onchange="renderCatalog()" /> 🌸 Primavera / Verano</label>
+            <label class="filter-check"><input type="checkbox" data-filter="temporada" value="Todo el año" onchange="renderCatalog()" /> 🌀 Todo el año</label>
+          </div>
+        </div>
+
+        <!-- Estilo -->
+        <div class="filter-section">
+          <button class="filter-section-title" onclick="toggleFilterSection(this)">Estilo <span class="fs-arrow">▾</span></button>
+          <div class="filter-section-body">
+            <label class="filter-check"><input type="checkbox" data-filter="estilo" value="Casual" onchange="renderCatalog()" /> Casual</label>
+            <label class="filter-check"><input type="checkbox" data-filter="estilo" value="Deportivo" onchange="renderCatalog()" /> Deportivo</label>
+            <label class="filter-check"><input type="checkbox" data-filter="estilo" value="Urbano" onchange="renderCatalog()" /> Urbano</label>
+            <label class="filter-check"><input type="checkbox" data-filter="estilo" value="Elegante" onchange="renderCatalog()" /> Elegante</label>
+            <label class="filter-check"><input type="checkbox" data-filter="estilo" value="Formal" onchange="renderCatalog()" /> Formal</label>
+            <label class="filter-check"><input type="checkbox" data-filter="estilo" value="Bohemio" onchange="renderCatalog()" /> Bohemio</label>
+            <label class="filter-check"><input type="checkbox" data-filter="estilo" value="Romántico" onchange="renderCatalog()" /> Romántico</label>
+            <label class="filter-check"><input type="checkbox" data-filter="estilo" value="Minimalista" onchange="renderCatalog()" /> Minimalista</label>
+          </div>
+        </div>
+
+        <!-- Ocasión -->
+        <div class="filter-section">
+          <button class="filter-section-title" onclick="toggleFilterSection(this)">Ocasión <span class="fs-arrow">▾</span></button>
+          <div class="filter-section-body">
+            <label class="filter-check"><input type="checkbox" data-filter="ocasion" value="Diario" onchange="renderCatalog()" /> Diario</label>
+            <label class="filter-check"><input type="checkbox" data-filter="ocasion" value="Trabajo" onchange="renderCatalog()" /> Trabajo</label>
+            <label class="filter-check"><input type="checkbox" data-filter="ocasion" value="Fiesta" onchange="renderCatalog()" /> Fiesta</label>
+            <label class="filter-check"><input type="checkbox" data-filter="ocasion" value="Playa" onchange="renderCatalog()" /> Playa</label>
+            <label class="filter-check"><input type="checkbox" data-filter="ocasion" value="Gimnasio" onchange="renderCatalog()" /> Gimnasio</label>
+            <label class="filter-check"><input type="checkbox" data-filter="ocasion" value="Salida nocturna" onchange="renderCatalog()" /> Salida nocturna</label>
+          </div>
+        </div>
+
+        <!-- Especiales -->
+        <div class="filter-section">
+          <button class="filter-section-title" onclick="toggleFilterSection(this)">Especiales <span class="fs-arrow">▾</span></button>
+          <div class="filter-section-body">
+            <label class="filter-check filter-check-special"><input type="checkbox" id="filterNovedades" onchange="renderCatalog()" /> ✨ Novedades</label>
+            <label class="filter-check filter-check-special"><input type="checkbox" id="filterOfertas" onchange="renderCatalog()" /> 🔥 Ofertas</label>
+          </div>
+        </div>
+
+        <!-- Botón aplicar (solo mobile) -->
+        <div class="filter-apply-wrap">
+          <button class="btn btn-gold" style="width:100%" onclick="cerrarFiltros()">Ver resultados</button>
+        </div>
+      </aside>
+
+      <!-- ── MAIN CATÁLOGO ── -->
+      <div class="catalogo-main">
+        <!-- Título -->
+        <div class="catalogo-header">
+          <div>
+            <p class="section-label">Toda la colección</p>
+            <h2>Catálogo</h2>
+            <div class="gold-line"></div>
+          </div>
+        </div>
+
+        <!-- Toolbar -->
+        <div class="catalogo-toolbar">
+          <button class="filter-mobile-btn" onclick="abrirFiltros()">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="4" y1="6" x2="20" y2="6"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="11" y1="18" x2="13" y2="18"/></svg>
+            Filtros
+            <span class="filter-count-badge" id="filterCountBadge" style="display:none">0</span>
+          </button>
+          <div class="filter-chips" id="filterChips"></div>
+          <div class="catalogo-toolbar-right">
+            <span class="catalogo-count" id="catalogoCount"></span>
+            <select class="catalogo-sort" id="catalogoSort" onchange="renderCatalog()">
+              <option value="">Ordenar</option>
+              <option value="precio_asc">Menor precio</option>
+              <option value="precio_desc">Mayor precio</option>
+              <option value="nombre_az">A → Z</option>
+              <option value="nombre_za">Z → A</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="products-grid" id="catalogoGrid"></div>
+      </div>
+
     </div>
   </section>
 

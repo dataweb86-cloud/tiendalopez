@@ -681,10 +681,176 @@ async function enviarConsulta(e) {
 }
 
 /* ─── INIT ──────────────────────────────────────── */
+/* ─── FILTROS CATÁLOGO ──────────────────────────── */
+function getFilterChecked(filterName) {
+  return [...document.querySelectorAll(`[data-filter="${filterName}"]:checked`)].map(cb => cb.value);
+}
+
+function toggleFilterSection(btn) {
+  const body = btn.nextElementSibling;
+  const arrow = btn.querySelector('.fs-arrow');
+  const isOpen = body.classList.contains('open');
+  body.classList.toggle('open', !isOpen);
+  if (arrow) arrow.style.transform = isOpen ? '' : 'rotate(180deg)';
+}
+
+function abrirFiltros() {
+  document.getElementById('filterSidebar').classList.add('open');
+  document.getElementById('filterOverlay').classList.add('active');
+  document.body.style.overflow = 'hidden';
+}
+function cerrarFiltros() {
+  document.getElementById('filterSidebar')?.classList.remove('open');
+  document.getElementById('filterOverlay')?.classList.remove('active');
+  document.body.style.overflow = '';
+}
+
+function limpiarFiltros() {
+  const busq = document.getElementById('filterBusqueda');
+  if (busq) busq.value = '';
+  document.querySelectorAll('[data-filter]:checked').forEach(cb => cb.checked = false);
+  const cat = document.getElementById('filterCategoria');
+  if (cat) cat.value = '';
+  const pMin = document.getElementById('filterPrecioMin');
+  if (pMin) pMin.value = '';
+  const pMax = document.getElementById('filterPrecioMax');
+  if (pMax) pMax.value = '';
+  const nov = document.getElementById('filterNovedades');
+  if (nov) nov.checked = false;
+  const of = document.getElementById('filterOfertas');
+  if (of) of.checked = false;
+  renderCatalog();
+}
+
+function buildFilterOptions(products) {
+  const colores = [...new Set(products.flatMap(p => getColores(p)))].filter(Boolean).sort();
+  const talles  = [...new Set(products.flatMap(p => {
+    const vTalles = getVariantes(p).map(v => v.talle);
+    const tText   = (p.talles || '').split(',').map(t => t.trim()).filter(Boolean);
+    return [...vTalles, ...tText];
+  }))].filter(Boolean).sort((a,b) => {
+    const num = (s) => parseFloat(s);
+    if (!isNaN(num(a)) && !isNaN(num(b))) return num(a) - num(b);
+    return a.localeCompare(b, 'es');
+  });
+
+  const colWrap = document.getElementById('filterColoresWrap');
+  if (colWrap) colWrap.innerHTML = colores.length
+    ? colores.map(c => `<label class="filter-check"><input type="checkbox" data-filter="color" value="${c}" onchange="renderCatalog()" /> ${c}</label>`).join('')
+    : '<span class="filter-empty-hint">Sin colores cargados</span>';
+
+  const talWrap = document.getElementById('filterTallesWrap');
+  if (talWrap) talWrap.innerHTML = talles.length
+    ? talles.map(t => `<label class="filter-check"><input type="checkbox" data-filter="talle" value="${t}" onchange="renderCatalog()" /> ${t}</label>`).join('')
+    : '<span class="filter-empty-hint">Sin talles cargados</span>';
+}
+
+function renderFilterChips(state) {
+  const chips = document.getElementById('filterChips');
+  if (!chips) return;
+  const items = [
+    ...(state.busqueda ? [{ label: `"${state.busqueda}"`, key: 'busqueda' }] : []),
+    ...state.generos.map(g   => ({ label: g, key: 'genero', val: g })),
+    ...(state.categoria ? [{ label: state.categoria, key: 'categoria' }] : []),
+    ...state.talles.map(t    => ({ label: `Talle ${t}`, key: 'talle', val: t })),
+    ...state.colores.map(c   => ({ label: c, key: 'color', val: c })),
+    ...(state.precioMin > 0  ? [{ label: `Desde ${fmt(state.precioMin)}`, key: 'precioMin' }] : []),
+    ...(state.precioMax > 0  ? [{ label: `Hasta ${fmt(state.precioMax)}`, key: 'precioMax' }] : []),
+    ...state.temporadas.map(t=> ({ label: t, key: 'temporada', val: t })),
+    ...state.estilos.map(t   => ({ label: t, key: 'estilo', val: t })),
+    ...state.ocasiones.map(t => ({ label: t, key: 'ocasion', val: t })),
+    ...(state.novedades ? [{ label: '✨ Novedades', key: 'novedades' }] : []),
+    ...(state.ofertas   ? [{ label: '🔥 Ofertas', key: 'ofertas' }] : []),
+  ];
+  window._chipClears = items.map(item => () => {
+    if (item.key === 'busqueda')   { document.getElementById('filterBusqueda').value=''; }
+    else if (item.key === 'categoria') { document.getElementById('filterCategoria').value=''; }
+    else if (item.key === 'precioMin') { document.getElementById('filterPrecioMin').value=''; }
+    else if (item.key === 'precioMax') { document.getElementById('filterPrecioMax').value=''; }
+    else if (item.key === 'novedades') { document.getElementById('filterNovedades').checked=false; }
+    else if (item.key === 'ofertas')   { document.getElementById('filterOfertas').checked=false; }
+    else {
+      const el = document.querySelector(`[data-filter="${item.key}"][value="${item.val}"]`);
+      if (el) el.checked = false;
+    }
+    renderCatalog();
+  });
+  chips.innerHTML = items.map((item, i) =>
+    `<span class="filter-chip">${item.label}<button onclick="filterChipClear(${i})" aria-label="Quitar">✕</button></span>`
+  ).join('');
+}
+
+function filterChipClear(i) {
+  if (window._chipClears && window._chipClears[i]) window._chipClears[i]();
+}
+
+function renderCatalog() {
+  const busqueda  = document.getElementById('filterBusqueda')?.value?.toLowerCase().trim() || '';
+  const generos   = getFilterChecked('genero');
+  const categoria = document.getElementById('filterCategoria')?.value || '';
+  const talles    = getFilterChecked('talle');
+  const colores   = getFilterChecked('color');
+  const precioMin = parseFloat(document.getElementById('filterPrecioMin')?.value) || 0;
+  const precioMax = parseFloat(document.getElementById('filterPrecioMax')?.value) || 0;
+  const temporadas= getFilterChecked('temporada');
+  const estilos   = getFilterChecked('estilo');
+  const ocasiones = getFilterChecked('ocasion');
+  const novedades = document.getElementById('filterNovedades')?.checked || false;
+  const ofertas   = document.getElementById('filterOfertas')?.checked || false;
+  const sort      = document.getElementById('catalogoSort')?.value || '';
+
+  let filtered = allProducts.filter(p => {
+    if (busqueda && !p.nombre?.toLowerCase().includes(busqueda) && !p.descripcion?.toLowerCase().includes(busqueda) && !p.categoria?.toLowerCase().includes(busqueda)) return false;
+    if (generos.length && !generos.includes(p.genero)) return false;
+    if (categoria && p.categoria !== categoria) return false;
+    if (talles.length) {
+      const pv = getVariantes(p).map(v => v.talle);
+      const pt = (p.talles || '').split(',').map(t => t.trim());
+      if (!talles.some(t => pv.includes(t) || pt.includes(t))) return false;
+    }
+    if (colores.length) {
+      if (!colores.some(c => getColores(p).includes(c))) return false;
+    }
+    if (precioMin > 0 && p.precio < precioMin) return false;
+    if (precioMax > 0 && p.precio > precioMax) return false;
+    if (temporadas.length && !temporadas.includes(p.temporada)) return false;
+    if (estilos.length && !estilos.includes(p.estilo)) return false;
+    if (ocasiones.length && !ocasiones.includes(p.ocasion)) return false;
+    if (novedades && !p.es_novedad) return false;
+    if (ofertas && !p.es_oferta) return false;
+    return true;
+  });
+
+  if (sort === 'precio_asc')  filtered.sort((a,b) => a.precio - b.precio);
+  else if (sort === 'precio_desc') filtered.sort((a,b) => b.precio - a.precio);
+  else if (sort === 'nombre_az')  filtered.sort((a,b) => (a.nombre||'').localeCompare(b.nombre||'','es'));
+  else if (sort === 'nombre_za')  filtered.sort((a,b) => (b.nombre||'').localeCompare(a.nombre||'','es'));
+  else filtered.sort((a,b) => (a.orden||999) - (b.orden||999));
+
+  renderProducts(filtered, 'catalogoGrid');
+
+  const countEl = document.getElementById('catalogoCount');
+  if (countEl) countEl.textContent = `${filtered.length} producto${filtered.length !== 1 ? 's' : ''}`;
+
+  const state = { busqueda, generos, categoria, talles, colores, precioMin, precioMax, temporadas, estilos, ocasiones, novedades, ofertas };
+  renderFilterChips(state);
+
+  const activeCount = [busqueda, ...generos, categoria, ...talles, ...colores,
+    precioMin > 0 ? 'min' : '', precioMax > 0 ? 'max' : '',
+    ...temporadas, ...estilos, ...ocasiones,
+    novedades ? 'nov' : '', ofertas ? 'of' : ''].filter(Boolean).length;
+  const badge = document.getElementById('filterCountBadge');
+  if (badge) { badge.textContent = activeCount; badge.style.display = activeCount ? '' : 'none'; }
+}
+
+/* ─── INIT ──────────────────────────────────────── */
 async function init() {
-  ['nuevosGrid','promocionesGrid','ofertasGrid','liquidacionGrid'].forEach(showSkeletons);
+  ['catalogoGrid','nuevosGrid','promocionesGrid','ofertasGrid','liquidacionGrid'].forEach(showSkeletons);
 
   allProducts = await fetchProducts();
+
+  buildFilterOptions(allProducts);
+  renderCatalog();
 
   const secciones = {
     nuevos:      'nuevosGrid',
