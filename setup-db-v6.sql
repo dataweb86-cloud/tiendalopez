@@ -20,6 +20,9 @@ CREATE TABLE IF NOT EXISTS clientes (
   activo          BOOLEAN DEFAULT TRUE
 );
 ALTER TABLE clientes ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "Clientes publico lectura"  ON clientes;
+DROP POLICY IF EXISTS "Clientes publico insertar" ON clientes;
+DROP POLICY IF EXISTS "Admin clientes"            ON clientes;
 CREATE POLICY "Clientes publico lectura"  ON clientes FOR SELECT USING (true);
 CREATE POLICY "Clientes publico insertar" ON clientes FOR INSERT WITH CHECK (true);
 CREATE POLICY "Admin clientes"            ON clientes FOR ALL USING (auth.role() = 'service_role');
@@ -31,10 +34,12 @@ CREATE TABLE IF NOT EXISTS config_tienda (
   valor TEXT
 );
 ALTER TABLE config_tienda ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "Config lectura publica" ON config_tienda;
+DROP POLICY IF EXISTS "Admin config"           ON config_tienda;
 CREATE POLICY "Config lectura publica" ON config_tienda FOR SELECT USING (true);
 CREATE POLICY "Admin config"           ON config_tienda FOR ALL USING (auth.role() = 'service_role');
 
--- Valores por defecto
+-- Valores por defecto (no sobreescribe si ya existen)
 INSERT INTO config_tienda (clave, valor) VALUES
   ('descuento_clientes_pct', '10'),
   ('anuncio_bar', '✦ ENVÍO GRATIS EN COMPRAS MAYORES A $50.000 ✦ NUEVAS COLECCIONES DISPONIBLES ✦ PAGOS EN CUOTAS SIN INTERÉS ✦'),
