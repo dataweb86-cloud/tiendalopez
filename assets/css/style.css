@@ -159,9 +159,6 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
   display: block;
   width: 100%;
   height: auto;
-  max-height: 560px;
-  object-fit: cover;
-  object-position: center center;
   transition: transform 8s ease;
 }
 .hero:hover .hero-img { transform: scale(1.02); }
